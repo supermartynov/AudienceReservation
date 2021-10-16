@@ -2,9 +2,10 @@ package com.audience.booking.server.controllers;
 
 
 
+import com.audience.booking.server.entity.Audience;
 import com.audience.booking.server.entity.Client;
 import com.audience.booking.server.exeption_handling.NoSuchEmployeeException;
-import com.audience.booking.server.service.EmployeeService;
+import com.audience.booking.server.service.AudienceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,38 +17,38 @@ import java.util.List;
 public class MyRESTController {
 
     @Autowired
-    private EmployeeService employeeService;
+    private AudienceService audienceService;
 
-    @GetMapping("/employees")
-    public List<Client> showAllEmployees(Model model) {
-         return employeeService.getAllEmployees();
+    @GetMapping("/audiences")
+    public List<Audience> showAllEmployees(Model model) {
+         return audienceService.getAllAudiences();
     }
 
-    @GetMapping("/employees/{id}")
-    public Client getEmployee(@PathVariable int id) {
-        Client employee = employeeService.getEmployee(id);
-        if (employee == null) {
-            throw new NoSuchEmployeeException("There is no employee with id = " + id + "in data base");
+    @GetMapping("/audiences/{id}")
+    public Audience getEmployee(@PathVariable int id) {
+        Audience audience = audienceService.getAudience(id);
+        if (audience == null) {
+            throw new NoSuchEmployeeException("There is no audience with id = " + id + "in data base");
         }
-        return employee;
+        return audience;
     }
 
-    @PostMapping("/employees")
-    public Client addEmployee(@RequestBody Client employee) {
-        employeeService.saveEmployee(employee);
-        return employee;
+    @PostMapping("/audiences")
+    public Audience addEmployee(@RequestBody Audience audience) {
+        audienceService.saveAudience(audience);
+        return audience;
     }
 
-    @PutMapping("/employees")
-    public Client updateEmployee(@RequestBody Client employee) {
-        employeeService.saveEmployee(employee);
-        return employee;
+    @PutMapping("/audiences")
+    public Audience updateEmployee(@RequestBody Audience audience) {
+        audienceService.saveAudience(audience);
+        return audience;
     }
 
-    @DeleteMapping("/employees/{id}")
+    @DeleteMapping("/audiences/{id}")
     public String deleteEmployee(@PathVariable int id) {
-        employeeService.deleteEmployee(id);
-        return "employee with id = " + id + "was deleted";
+        audienceService.deleteAudience(id);
+        return "audience with id = " + id + "was deleted";
     }
 
 }

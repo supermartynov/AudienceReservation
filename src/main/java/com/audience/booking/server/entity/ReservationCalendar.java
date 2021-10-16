@@ -26,4 +26,39 @@ public class ReservationCalendar {
     @Column(name = "end")
     private LocalDateTime end;
 
+
+    public ReservationCalendar() {
+    }
+
+    public int getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(int clientId) {
+        this.clientId = clientId;
+    }
+
+    public int getAudienceId() {
+        return audienceId;
+    }
+
+    public void setAudienceId(int audienceId) {
+        this.audienceId = audienceId;
+    }
+
+    public LocalDateTime getStart() {
+        return start;
+    }
+
+    public void setStart(LocalDateTime start) {
+        this.start = start;
+    }
+
+    public LocalDateTime getEnd() {
+        return end;
+    }
+
+    public void setEnd(LocalDateTime end) {
+        this.end = end;
+    }
 }

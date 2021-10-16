@@ -2,6 +2,7 @@ package com.audience.booking.server.entity;
 
 import javax.persistence.*;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Table(name = "templates")
@@ -20,6 +21,10 @@ public class Template {
 
     @Column(name = "is_available")
     private boolean isAvailavle;
+
+    @OneToMany
+    @JoinTable(name = "template_id")
+    private List<Audience> list;
 
     public Template() {
     }

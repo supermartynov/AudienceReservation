@@ -1,5 +1,6 @@
 package com.audience.booking.server.dao;
 
+import com.audience.booking.server.entity.Audience;
 import com.audience.booking.server.entity.Client;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,40 +12,40 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
-public class EmployeeDAOImplementation implements EmployeeDAO {
+public class AudienceDAOImplementation implements AudienceDAO {
 
     @Autowired
     private EntityManager entityManager;
 
     @Override
     @Transactional
-    public List<Client> getAllEmployees() {
+    public List<Audience> getAllAudiences() {
         Session session = entityManager.unwrap(Session.class);
-        List<Client> allEmployees = session.createQuery("from Employee", Client.class).getResultList();
-        return allEmployees;
+        List<Audience> allAudiences = session.createQuery("from Audience", Audience.class).getResultList();
+        return allAudiences;
     }
 
     @Override
     @Transactional
-    public void saveEmployee(Client employee) {
+    public void saveAudience(Audience audience) {
         Session session = entityManager.unwrap(Session.class);
-        session.saveOrUpdate(employee);
+        session.saveOrUpdate(audience);
     }
 
     @Override
     @Transactional
-    public Client getEmployee(int id) {
+    public Audience getAudience(int id) {
         Session session = entityManager.unwrap(Session.class);
-        return session.get(Client.class, id);
+        return session.get(Audience.class, id);
     }
 
     @Override
     @Transactional
-    public void deleteEmployee(int id) {
+    public void deleteAudience(int id) {
         Session session = entityManager.unwrap(Session.class);
-        Query employeeQuery = session.createQuery("delete from Client " +
-                "where id =:employeeId");
-        employeeQuery.setParameter("employeeId", id);
+        Query employeeQuery = session.createQuery("delete from Audience " +
+                "where id =:audienceId");
+        employeeQuery.setParameter("audienceId", id);
         employeeQuery.executeUpdate();
     }
 }
