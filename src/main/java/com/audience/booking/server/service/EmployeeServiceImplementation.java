@@ -2,7 +2,7 @@ package com.audience.booking.server.service;
 
 
 import com.audience.booking.server.dao.EmployeeDAO;
-import com.audience.booking.server.entity.Employee;
+import com.audience.booking.server.entity.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,19 +18,19 @@ public class EmployeeServiceImplementation implements EmployeeService{
 
     @Override
     @Transactional
-    public List<Employee> getAllEmployees() {
+    public List<Client> getAllEmployees() {
         return employeeDAO.getAllEmployees();
     }
 
     @Override
     @Transactional
-    public void saveEmployee(Employee employee) {
+    public void saveEmployee(Client employee) {
         employeeDAO.saveEmployee(employee);
     }
 
     @Override
     @Transactional
-    public Employee getEmployee(int id) {
+    public Client getEmployee(int id) {
         return employeeDAO.getEmployee(id);
     }
 

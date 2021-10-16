@@ -2,7 +2,7 @@ package com.audience.booking.server.controllers;
 
 
 
-import com.audience.booking.server.entity.Employee;
+import com.audience.booking.server.entity.Client;
 import com.audience.booking.server.exeption_handling.NoSuchEmployeeException;
 import com.audience.booking.server.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +19,13 @@ public class MyRESTController {
     private EmployeeService employeeService;
 
     @GetMapping("/employees")
-    public List<Employee> showAllEmployees(Model model) {
+    public List<Client> showAllEmployees(Model model) {
          return employeeService.getAllEmployees();
     }
 
     @GetMapping("/employees/{id}")
-    public Employee getEmployee(@PathVariable int id) {
-        Employee employee = employeeService.getEmployee(id);
+    public Client getEmployee(@PathVariable int id) {
+        Client employee = employeeService.getEmployee(id);
         if (employee == null) {
             throw new NoSuchEmployeeException("There is no employee with id = " + id + "in data base");
         }
@@ -33,13 +33,13 @@ public class MyRESTController {
     }
 
     @PostMapping("/employees")
-    public Employee addEmployee(@RequestBody Employee employee) {
+    public Client addEmployee(@RequestBody Client employee) {
         employeeService.saveEmployee(employee);
         return employee;
     }
 
     @PutMapping("/employees")
-    public Employee updateEmployee(@RequestBody Employee employee) {
+    public Client updateEmployee(@RequestBody Client employee) {
         employeeService.saveEmployee(employee);
         return employee;
     }

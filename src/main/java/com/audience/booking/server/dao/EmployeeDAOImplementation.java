@@ -1,6 +1,6 @@
 package com.audience.booking.server.dao;
 
-import com.audience.booking.server.entity.Employee;
+import com.audience.booking.server.entity.Client;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -18,31 +18,31 @@ public class EmployeeDAOImplementation implements EmployeeDAO {
 
     @Override
     @Transactional
-    public List<Employee> getAllEmployees() {
+    public List<Client> getAllEmployees() {
         Session session = entityManager.unwrap(Session.class);
-        List<Employee> allEmployees = session.createQuery("from Employee", Employee.class).getResultList();
+        List<Client> allEmployees = session.createQuery("from Employee", Client.class).getResultList();
         return allEmployees;
     }
 
     @Override
     @Transactional
-    public void saveEmployee(Employee employee) {
+    public void saveEmployee(Client employee) {
         Session session = entityManager.unwrap(Session.class);
         session.saveOrUpdate(employee);
     }
 
     @Override
     @Transactional
-    public Employee getEmployee(int id) {
+    public Client getEmployee(int id) {
         Session session = entityManager.unwrap(Session.class);
-        return session.get(Employee.class, id);
+        return session.get(Client.class, id);
     }
 
     @Override
     @Transactional
     public void deleteEmployee(int id) {
         Session session = entityManager.unwrap(Session.class);
-        Query employeeQuery = session.createQuery("delete from Employee " +
+        Query employeeQuery = session.createQuery("delete from Client " +
                 "where id =:employeeId");
         employeeQuery.setParameter("employeeId", id);
         employeeQuery.executeUpdate();

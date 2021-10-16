@@ -1,17 +1,17 @@
 package com.audience.booking.server.service;
 
 
-import com.audience.booking.server.entity.Employee;
+import com.audience.booking.server.entity.Client;
 
 import java.util.List;
 
 
 public interface EmployeeService {
-    public List<Employee> getAllEmployees();
+    public List<Client> getAllEmployees();
 
-    public void saveEmployee (Employee employee);
+    public void saveEmployee (Client employee);
 
-    public Employee getEmployee(int id);
+    public Client getEmployee(int id);
 
     public void deleteEmployee(int id);
 
