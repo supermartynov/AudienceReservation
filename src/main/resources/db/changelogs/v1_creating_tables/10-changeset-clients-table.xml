@@ -11,6 +11,7 @@
                 <constraints primaryKey="true"/>
             </column>
             <column name="name" type="varchar"/>
+            <column name="surname" type="varchar"/>
             <column name="mail" type="varchar"/>
             <column name="password" type="varchar"/>
         </createTable>

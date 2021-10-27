@@ -20,7 +20,7 @@ public class MyRESTController {
     private AudienceService audienceService;
 
     @GetMapping("/audiences")
-    public List<Audience> showAllEmployees(Model model) {
+    public List<Audience> showAllEmployees() {
          return audienceService.getAllAudiences();
     }
 

@@ -15,8 +15,8 @@ public class Client {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "email")
-    private String email;
+    @Column(name = "mail")
+    private String mail;
 
     @Column(name = "password")
     private String password;
@@ -28,9 +28,9 @@ public class Client {
     public Client() {
     }
 
-    public Client(String name, String email, String password) {
+    public Client(String name, String mail, String password) {
         this.name = name;
-        this.email = email;
+        this.mail = mail;
         this.password = password;
     }
 
@@ -42,12 +42,12 @@ public class Client {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
+    public String getMail() {
+        return mail;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setMail(String email) {
+        this.mail = email;
     }
 
     public String getPassword() {

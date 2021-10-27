@@ -5,6 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd
 		 http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.3.xsd">
-    <include file="./v1_creating_tables/v1-changelog-master.xml" relativeToChangelogFile="true"/>
-    <include file="./v2_filling_tables/v2-changelog-master.xml" relativeToChangelogFile="true"/>
+    <include file="10-changeset-insert-templates.xml" relativeToChangelogFile="true"/>
+    <include file="10-changeset-insert-clients.xml" relativeToChangelogFile="true"/>
+    <include file="10-changeset-insert-audiences.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
