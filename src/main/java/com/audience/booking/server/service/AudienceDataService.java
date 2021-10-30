@@ -2,9 +2,8 @@ package com.audience.booking.server.service;
 
 
 import com.audience.booking.server.dao.AudienceDAO;
-import com.audience.booking.server.dao.AudienceDAOImplementation;
 import com.audience.booking.server.entity.Audience;
-import com.audience.booking.server.entity.Client;
+import com.audience.booking.server.exceptions.MyEntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,33 +11,30 @@ import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
-public class AudienceServiceImplementation implements AudienceService {
+public class AudienceDataService {
 
     @Autowired
-    private AudienceDAOImplementation employeeDAO;
+    private AudienceDAO audienceCrudRepository;
 
-    @Override
     @Transactional
     public List<Audience> getAllAudiences() {
-        return employeeDAO.getAllAudiences();
+        return (List<Audience>) audienceCrudRepository.findAll();
     }
 
-    @Override
     @Transactional
     public void saveAudience(Audience audience) {
-        employeeDAO.saveAudience(audience);
+        audienceCrudRepository.save(audience);
     }
 
-    @Override
     @Transactional
     public Audience getAudience(int id) {
-        return employeeDAO.getAudience(id);
+
+         return audienceCrudRepository.findById(id).get();
     }
 
-    @Override
     @Transactional
     public void deleteAudience(int id) {
-        employeeDAO.deleteAudience(id);
+        audienceCrudRepository.deleteById(id);
     }
 
 }

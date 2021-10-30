@@ -3,49 +3,50 @@ package com.audience.booking.server.controllers;
 
 
 import com.audience.booking.server.entity.Audience;
-import com.audience.booking.server.entity.Client;
-import com.audience.booking.server.exeption_handling.NoSuchEmployeeException;
-import com.audience.booking.server.service.AudienceService;
+import com.audience.booking.server.exceptions.MyEntityNotFoundException;
+import com.audience.booking.server.service.AudienceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/")
-public class MyRESTController {
+@RequestMapping("/audiences")
+public class AudiencesRESTController {
 
     @Autowired
-    private AudienceService audienceService;
+    private AudienceDataService audienceService;
 
-    @GetMapping("/audiences")
+    @GetMapping("/")
     public List<Audience> showAllEmployees() {
          return audienceService.getAllAudiences();
     }
 
-    @GetMapping("/audiences/{id}")
+    @GetMapping("/{id}")
     public Audience getEmployee(@PathVariable int id) {
-        Audience audience = audienceService.getAudience(id);
-        if (audience == null) {
-            throw new NoSuchEmployeeException("There is no audience with id = " + id + "in data base");
+        Audience audience = null;
+        try {
+            audience = audienceService.getAudience(id);
+        } catch (NoSuchElementException exception) {
+            throw new MyEntityNotFoundException(id);
         }
         return audience;
     }
 
-    @PostMapping("/audiences")
+    @PostMapping("/")
     public Audience addEmployee(@RequestBody Audience audience) {
         audienceService.saveAudience(audience);
         return audience;
     }
 
-    @PutMapping("/audiences")
+    @PutMapping("/")
     public Audience updateEmployee(@RequestBody Audience audience) {
         audienceService.saveAudience(audience);
         return audience;
     }
 
-    @DeleteMapping("/audiences/{id}")
+    @DeleteMapping("/{id}")
     public String deleteEmployee(@PathVariable int id) {
         audienceService.deleteAudience(id);
         return "audience with id = " + id + "was deleted";
