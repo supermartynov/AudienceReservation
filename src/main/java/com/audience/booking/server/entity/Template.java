@@ -43,6 +43,15 @@ public class Template {
         audience.setTemplate(this);
     }
 
+
+    @Override
+    public String toString() {
+        return "Template{" +
+                "startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", isAvailavle=" + isAvailavle;
+    }
+
     public LocalTime getStartTime() {
         return startTime;
     }
@@ -65,15 +74,5 @@ public class Template {
 
     public void setAvailavle(boolean availavle) {
         isAvailavle = availavle;
-    }
-
-    @Override
-    public String toString() {
-        return "Template{" +
-                "startTime=" + startTime +
-                ", endTime=" + endTime +
-                ", isAvailavle=" + isAvailavle +
-                ", audienceList=" + audienceList +
-                '}';
     }
 }

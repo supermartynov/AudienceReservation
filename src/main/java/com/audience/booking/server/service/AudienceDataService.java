@@ -3,6 +3,7 @@ package com.audience.booking.server.service;
 
 import com.audience.booking.server.dao.AudienceDAO;
 import com.audience.booking.server.entity.Audience;
+import com.audience.booking.server.entity.Template;
 import com.audience.booking.server.exceptions.MyEntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class AudienceDataService {
 
     @Transactional
     public void saveAudience(Audience audience) {
-        audience.getTemplate().addAudienceToTemplate(audience);
+        System.out.println(audience);
         audienceCrudRepository.save(audience);
     }
 

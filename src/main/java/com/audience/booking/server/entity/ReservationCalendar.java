@@ -28,7 +28,7 @@ public class ReservationCalendar {
     private Client client;
 
     @ManyToOne()
-    @JoinColumn(name = "audience_id", insertable = false, updatable = false, nullable = false)
+    @JoinColumn(name = "audience_id")
     private Audience audience;
 
     public ReservationCalendar() {

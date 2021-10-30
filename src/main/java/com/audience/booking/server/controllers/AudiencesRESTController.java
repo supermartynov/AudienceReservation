@@ -3,8 +3,11 @@ package com.audience.booking.server.controllers;
 
 
 import com.audience.booking.server.entity.Audience;
+import com.audience.booking.server.entity.Template;
 import com.audience.booking.server.exceptions.MyEntityNotFoundException;
+import com.audience.booking.server.helpClasses.AudienceTemplate;
 import com.audience.booking.server.service.AudienceDataService;
+import com.audience.booking.server.service.TemplateDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +20,9 @@ public class AudiencesRESTController {
 
     @Autowired
     private AudienceDataService audienceService;
+
+    @Autowired
+    private TemplateDataService templateDataService;
 
     @GetMapping("/")
     public List<Audience> showAllEmployees() {
@@ -35,13 +41,16 @@ public class AudiencesRESTController {
     }
 
     @PostMapping("/")
-    public Audience addEmployee(@RequestBody Audience audience) {
-        System.out.println(audience);
-        System.out.println("____________");
-        System.out.println("____________");
-        System.out.println("____________");
-        //audienceService.saveAudience(audience);
-        return audience;
+    public Audience addEmployee(@RequestBody AudienceTemplate audience) {
+        int capacity = audience.getCapacity();
+        String description = audience.getDescription();
+        Template template = templateDataService.getTemplates(audience.getTemplateId());
+
+        Audience finalAudience = new Audience(capacity, description, template);
+
+        template.addAudienceToTemplate(finalAudience);
+        audienceService.saveAudience(finalAudience);
+        return finalAudience;
     }
 
     @PutMapping("/")
