@@ -3,8 +3,10 @@ package com.audience.booking.server.controllers;
 
 
 import com.audience.booking.server.entity.Audience;
+import com.audience.booking.server.entity.ReservationCalendar;
 import com.audience.booking.server.exceptions.MyEntityNotFoundException;
 import com.audience.booking.server.service.AudienceDataService;
+import com.audience.booking.server.service.ReservationCalendarDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,44 +14,44 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/audiences")
+@RequestMapping("/reservation_calendar")
 public class ReservationCalendarRESTController {
 
     @Autowired
-    private AudienceDataService audienceService;
+    private ReservationCalendarDataService reservationService;
 
     @GetMapping("/")
-    public List<Audience> showAllEmployees() {
-         return audienceService.getAllAudiences();
+    public List<ReservationCalendar> showAllEmployees() {
+         return reservationService.getAllReservationCalendars();
     }
 
     @GetMapping("/{id}")
-    public Audience getEmployee(@PathVariable int id) {
-        Audience audience = null;
+    public ReservationCalendar getEmployee(@PathVariable int id) {
+        ReservationCalendar reservationCalendar = null;
         try {
-            audience = audienceService.getAudience(id);
+            reservationCalendar = reservationService.getReservationCalendar(id);
         } catch (NoSuchElementException exception) {
             throw new MyEntityNotFoundException(id);
         }
-        return audience;
+        return reservationCalendar;
     }
 
     @PostMapping("/")
-    public Audience addEmployee(@RequestBody Audience audience) {
-        audienceService.saveAudience(audience);
-        return audience;
+    public ReservationCalendar addEmployee(@RequestBody ReservationCalendar reservationCalendar) {
+        reservationService.saveReservationCalendar(reservationCalendar);
+        return reservationCalendar;
     }
 
     @PutMapping("/")
-    public Audience updateEmployee(@RequestBody Audience audience) {
-        audienceService.saveAudience(audience);
-        return audience;
+    public ReservationCalendar updateEmployee(@RequestBody ReservationCalendar reservationCalendar) {
+        reservationService.saveReservationCalendar(reservationCalendar);
+        return reservationCalendar;
     }
 
     @DeleteMapping("/{id}")
     public String deleteEmployee(@PathVariable int id) {
-        audienceService.deleteAudience(id);
-        return "audience with id = " + id + "was deleted";
+        reservationService.deleteReservationCalendar(id);
+        return "reservation with id = " + id + "was deleted";
     }
 
 }

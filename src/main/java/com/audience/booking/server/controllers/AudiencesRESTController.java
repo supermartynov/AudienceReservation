@@ -36,7 +36,11 @@ public class AudiencesRESTController {
 
     @PostMapping("/")
     public Audience addEmployee(@RequestBody Audience audience) {
-        audienceService.saveAudience(audience);
+        System.out.println(audience);
+        System.out.println("____________");
+        System.out.println("____________");
+        System.out.println("____________");
+        //audienceService.saveAudience(audience);
         return audience;
     }
 

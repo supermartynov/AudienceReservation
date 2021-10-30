@@ -8,7 +8,7 @@ import java.util.List;
 @Table(name = "clients")
 public class Client {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
@@ -21,9 +21,9 @@ public class Client {
     @Column(name = "password")
     private String password;
 
-    @OneToMany
+    /*@OneToMany()
     @JoinColumn(name = "client_id")
-    private List<ReservationCalendar> clientReservations;
+    private List<ReservationCalendar> clientReservations;*/
 
     public Client() {
     }
@@ -58,11 +58,4 @@ public class Client {
         this.password = password;
     }
 
-    public List<ReservationCalendar> getClientReservations() {
-        return clientReservations;
-    }
-
-    public void setClientReservations(List<ReservationCalendar> clientReservations) {
-        this.clientReservations = clientReservations;
-    }
 }

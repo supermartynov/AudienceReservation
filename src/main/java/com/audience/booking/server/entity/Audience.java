@@ -8,7 +8,7 @@ import java.util.List;
 public class Audience {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
@@ -18,20 +18,21 @@ public class Audience {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "template_id")
-    private int templateId;
+    @ManyToOne
+    @JoinColumn(name = "template_id")
+    private Template template;
 
-    @OneToMany()
-    @JoinTable(name = "audience_id")
-    private List<ReservationCalendar> audienceReservations;
+    /*@OneToMany
+    @JoinColumn(name = "audience_id")
+    private List<ReservationCalendar> audienceReservations;*/
 
     public Audience() {
     }
 
-    public Audience(int capacity, String description, int templateId) {
+    public Audience(int capacity, String description, Template template) {
         this.capacity = capacity;
         this.description = description;
-        this.templateId = templateId;
+        this.template = template;
     }
 
     public int getCapacity() {
@@ -50,19 +51,21 @@ public class Audience {
         this.description = description;
     }
 
-    public int getTemplateId() {
-        return templateId;
+    public Template getTemplate() {
+        return template;
     }
 
-    public void setTemplateId(int templateId) {
-        this.templateId = templateId;
+    public void setTemplate(Template template) {
+        this.template = template;
     }
 
-    public List<ReservationCalendar> getAudienceReservations() {
-        return audienceReservations;
-    }
-
-    public void setAudienceReservations(List<ReservationCalendar> audienceReservations) {
-        this.audienceReservations = audienceReservations;
+    @Override
+    public String toString() {
+        return "Audience{" +
+                "id=" + id +
+                ", capacity=" + capacity +
+                ", description='" + description + '\'' +
+                ", template=" + template +
+                '}';
     }
 }

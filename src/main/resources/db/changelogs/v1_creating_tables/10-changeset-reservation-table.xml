@@ -7,13 +7,13 @@
 		 http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.3.xsd">
     <changeSet id="5" author="Martynov Daniil">
         <createTable tableName="reservation_calendar">
-            <column name="id" autoIncrement="true" type="int">
+            <column name="id" type="int" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
             <column name="client_id" type="int"/>
             <column name="audience_id" type="int"/>
-            <column name="start" type="date"/>
-            <column name="end" type="date"/>
+            <column name="start_time" type="timestamp"/>
+            <column name="end_time" type="timestamp"/>
         </createTable>
         <addForeignKeyConstraint baseTableName="reservation_calendar" baseColumnNames="client_id"
                                  constraintName="constrain_FK_reservation_client_id"
@@ -23,5 +23,6 @@
                                  constraintName="constrain_FK_reservation_audience_id"
                                  referencedTableName="audiences"
                                  referencedColumnNames="id"/>
+
     </changeSet>
 </databaseChangeLog>

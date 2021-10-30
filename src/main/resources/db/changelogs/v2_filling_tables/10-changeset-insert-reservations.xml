@@ -5,8 +5,14 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd
 		 http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.3.xsd">
-    <include file="10-changeset-insert-templates.xml" relativeToChangelogFile="true"/>
-    <include file="10-changeset-insert-clients.xml" relativeToChangelogFile="true"/>
-    <include file="10-changeset-insert-audiences.xml" relativeToChangelogFile="true"/>
-    <include file="10-changeset-insert-reservations.xml" relativeToChangelogFile="true"/>
+    <changeSet id="10" author="Martynov Daniil">
+
+        <insert tableName="reservation_calendar">
+            <column name="client_id" value="1"/>
+            <column name="audience_id" value="2"/>
+            <column name="start_time" value="2011-10-19 10:23:54"/>
+            <column name="end_time" value="2011-10-20 10:23:54"/>
+        </insert>
+
+    </changeSet>
 </databaseChangeLog>

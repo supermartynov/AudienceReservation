@@ -2,6 +2,7 @@ package com.audience.booking.server.entity;
 
 import javax.persistence.*;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -9,7 +10,7 @@ import java.util.List;
 public class Template {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
@@ -22,9 +23,8 @@ public class Template {
     @Column(name = "is_available")
     private boolean isAvailavle;
 
-    @OneToMany
-    @JoinTable(name = "template_id")
-    private List<Audience> list;
+    @OneToMany(mappedBy = "template")
+    private List<Audience> audienceList;
 
     public Template() {
     }
@@ -33,6 +33,14 @@ public class Template {
         this.startTime = startTime;
         this.endTime = endTime;
         this.isAvailavle = isAvailavle;
+    }
+
+    public void addAudienceToTemplate(Audience audience) {
+        if (audienceList.isEmpty()) {
+            audienceList = new ArrayList<>();
+        }
+        audienceList.add(audience);
+        audience.setTemplate(this);
     }
 
     public LocalTime getStartTime() {
@@ -57,5 +65,15 @@ public class Template {
 
     public void setAvailavle(boolean availavle) {
         isAvailavle = availavle;
+    }
+
+    @Override
+    public String toString() {
+        return "Template{" +
+                "startTime=" + startTime +
+                ", endTime=" + endTime +
+                ", isAvailavle=" + isAvailavle +
+                ", audienceList=" + audienceList +
+                '}';
     }
 }

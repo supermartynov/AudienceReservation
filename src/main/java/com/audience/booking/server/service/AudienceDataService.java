@@ -23,6 +23,7 @@ public class AudienceDataService {
 
     @Transactional
     public void saveAudience(Audience audience) {
+        audience.getTemplate().addAudienceToTemplate(audience);
         audienceCrudRepository.save(audience);
     }
 

@@ -1,5 +1,8 @@
 package com.audience.booking.server.entity;
 
+import com.sun.istack.NotNull;
+import org.springframework.lang.NonNull;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,41 +13,34 @@ import java.time.LocalTime;
 public class ReservationCalendar {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private int id;
 
-    @Column(name = "client_id")
-    private int clientId;
-
-    @Column(name = "audience_id")
-    private int audienceId;
-
-    @Column(name = "start")
+    @Column(name = "start_time")
     private LocalDateTime start;
 
-    @Column(name = "end")
+    @Column(name = "end_time")
     private LocalDateTime end;
 
+    @ManyToOne()
+    @JoinColumn(name = "client_id")
+    private Client client;
+
+    @ManyToOne()
+    @JoinColumn(name = "audience_id", insertable = false, updatable = false, nullable = false)
+    private Audience audience;
 
     public ReservationCalendar() {
     }
 
-    public int getClientId() {
-        return clientId;
+    public ReservationCalendar(LocalDateTime start, LocalDateTime end, Client client, Audience audience) {
+        this.start = start;
+        this.end = end;
+        this.client = client;
+        this.audience = audience;
     }
 
-    public void setClientId(int clientId) {
-        this.clientId = clientId;
-    }
-
-    public int getAudienceId() {
-        return audienceId;
-    }
-
-    public void setAudienceId(int audienceId) {
-        this.audienceId = audienceId;
-    }
 
     public LocalDateTime getStart() {
         return start;
@@ -60,5 +56,13 @@ public class ReservationCalendar {
 
     public void setEnd(LocalDateTime end) {
         this.end = end;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public Audience getAudience() {
+        return audience;
     }
 }

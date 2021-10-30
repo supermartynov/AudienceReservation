@@ -12,26 +12,26 @@ import java.util.List;
 public class ReservationCalendarDataService {
 
     @Autowired
-    private ReservationCalendarDAO ReservationCalendarCrudRepository;
+    private ReservationCalendarDAO reservationCalendarCrudRepository;
 
     @Transactional
     public List<ReservationCalendar> getAllReservationCalendars() {
-        return (List<ReservationCalendar>) ReservationCalendarCrudRepository.findAll();
+        return (List<ReservationCalendar>) reservationCalendarCrudRepository.findAll();
     }
 
     @Transactional
-    public void saveReservationCalendar(ReservationCalendar ReservationCalendar) {
-        ReservationCalendarCrudRepository.save(ReservationCalendar);
+    public void saveReservationCalendar(ReservationCalendar reservationCalendar) {
+        reservationCalendarCrudRepository.save(reservationCalendar);
     }
 
     @Transactional
     public void deleteReservationCalendar(int id) {
-        ReservationCalendarCrudRepository.deleteById(id);
+        reservationCalendarCrudRepository.deleteById(id);
     }
 
     @Transactional
     public ReservationCalendar getReservationCalendar(int id) {
-        return ReservationCalendarCrudRepository.findById(id).get();
+        return reservationCalendarCrudRepository.findById(id).get();
     }
 
 }
