@@ -6,6 +6,7 @@ import com.audience.booking.server.entity.Audience;
 import com.audience.booking.server.entity.Client;
 import com.audience.booking.server.entity.ReservationCalendar;
 import com.audience.booking.server.exceptions.AlreadyBookedException;
+import com.audience.booking.server.exceptions.InvalidTimeException;
 import com.audience.booking.server.exceptions.MyEntityNotFoundException;
 import com.audience.booking.server.helpClasses.ReservationClientAudience;
 import com.audience.booking.server.service.AudienceDataService;
@@ -72,23 +73,27 @@ public class ReservationCalendarRESTController {
     @PostMapping("/")
     public ReservationCalendar addReservationCalendar(@RequestBody ReservationClientAudience reservationClientAudience) {
 
+        Audience audienceId = null;
+        Client clientId = null;
+        LocalDateTime startTime = reservationClientAudience.getStart();
+        LocalDateTime endTime = reservationClientAudience.getEnd();
         Audience audience = audienceDataService.getAudience(reservationClientAudience.getAudience());
+
         if (!reservationService.getAllReservationCalendarByIntervalAndAudience(reservationClientAudience.getStart(),
                 reservationClientAudience.getEnd(), audience).isEmpty()) { //находим все записи в заданный интервал и по заданной
             throw new AlreadyBookedException(reservationClientAudience);  // аудитории
         }
 
-        LocalDateTime startTime = reservationClientAudience.getStart();
-        LocalDateTime endTime = reservationClientAudience.getEnd();
+        if (startTime.isAfter(endTime)) {
+            throw new InvalidTimeException(startTime, endTime);
+        }
 
-        Audience audienceId = null;
         try {
             audienceId = audienceDataService.getAudience(reservationClientAudience.getAudience());
         } catch (NoSuchElementException exception) {
             throw new MyEntityNotFoundException(reservationClientAudience.getAudience(), Audience.class.getSimpleName());
         }
 
-        Client clientId = null;
         try {
             clientId = clientDataService.getClient(reservationClientAudience.getClient());
         } catch (NoSuchElementException exception) {

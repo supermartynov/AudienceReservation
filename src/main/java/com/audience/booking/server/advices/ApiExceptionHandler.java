@@ -2,6 +2,7 @@ package com.audience.booking.server.advices;
 
 import com.audience.booking.server.exceptions.AlreadyBookedException;
 import com.audience.booking.server.exceptions.ApiCustomException;
+import com.audience.booking.server.exceptions.InvalidTimeException;
 import com.audience.booking.server.exceptions.MyEntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +21,16 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(value = {AlreadyBookedException.class})
-    public ResponseEntity<Object> handleEntityNotFoundException(AlreadyBookedException err) {
+    public ResponseEntity<Object> handleAlreadyBookedException(AlreadyBookedException err) {
         HttpStatus conflict = HttpStatus.CONFLICT;
         ApiCustomException apiCustomException = new ApiCustomException(err.getMessage(), conflict);
         return new ResponseEntity<>(apiCustomException, conflict);
+    }
+
+    @ExceptionHandler(value = {InvalidTimeException.class})
+    public ResponseEntity<Object> handleInvalidTimeException(InvalidTimeException err) {
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        ApiCustomException apiCustomException = new ApiCustomException(err.getMessage(), badRequest);
+        return new ResponseEntity<>(apiCustomException, badRequest);
     }
 }
