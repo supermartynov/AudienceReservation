@@ -1,17 +1,41 @@
 package com.audience.booking.server.helpClasses;
 
+import com.audience.booking.server.entity.Audience;
+import com.audience.booking.server.entity.Template;
+import com.audience.booking.server.exceptions.MyEntityNotFoundException;
+import com.audience.booking.server.service.TemplateDataService;
+
+import java.util.NoSuchElementException;
+
 public class AudienceTemplate {
     private int capacity;
     private String description;
-    private int templateId;
+    private int template;
 
-    public AudienceTemplate(int capacity, String description, int templateId) {
+    public AudienceTemplate(int capacity, String description, int template) {
         this.capacity = capacity;
         this.description = description;
-        this.templateId = templateId;
+        this.template = template;
     }
 
     public AudienceTemplate() {
+    }
+
+    public static Audience convertAudienceTemplateToAudience(TemplateDataService templateDataService, AudienceTemplate audience) {
+        int capacity = audience.getCapacity();
+        String description = audience.getDescription();
+        Template template = null;
+
+        try {
+            template = templateDataService.getTemplates(audience.getTemplate());
+        } catch (NoSuchElementException exception) {
+            throw new MyEntityNotFoundException(audience.getTemplate(), Template.class.getSimpleName());
+        }
+
+        Audience finalAudience = new Audience(capacity, description, template);
+        template.addAudienceToTemplate(finalAudience);
+
+        return finalAudience;
     }
 
     public int getCapacity() {
@@ -30,12 +54,12 @@ public class AudienceTemplate {
         this.description = description;
     }
 
-    public int getTemplateId() {
-        return templateId;
+    public int getTemplate() {
+        return template;
     }
 
-    public void setTemplateId(int templateId) {
-        this.templateId = templateId;
+    public void setTemplate(int template) {
+        this.template = template;
     }
 
     @Override
@@ -43,7 +67,7 @@ public class AudienceTemplate {
         return "AudienceTemplate{" +
                 "capacity=" + capacity +
                 ", description='" + description + '\'' +
-                ", templateId=" + templateId +
+                ", templateId=" + template +
                 '}';
     }
 }

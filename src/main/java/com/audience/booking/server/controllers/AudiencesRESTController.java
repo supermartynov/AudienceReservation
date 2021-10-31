@@ -32,36 +32,30 @@ public class AudiencesRESTController {
     @GetMapping("/{id}")
     public Audience getEmployee(@PathVariable int id) {
         Audience audience = null;
+
         try {
             audience = audienceService.getAudience(id);
         } catch (NoSuchElementException exception) {
-            throw new MyEntityNotFoundException(id);
+            throw new MyEntityNotFoundException(id, Audience.class.getSimpleName());
         }
+
         return audience;
     }
 
     @PostMapping("/")
-    public Audience addEmployee(@RequestBody AudienceTemplate audience) { //AudienceTemplate - объект, содержащий поля запроса
-        int capacity = audience.getCapacity();
-        String description = audience.getDescription();
-        Template template = templateDataService.getTemplates(audience.getTemplateId());
-
-        Audience finalAudience = new Audience(capacity, description, template); //строим объект Audience на основании параметров
-                                                                                // из тела запроса
-        template.addAudienceToTemplate(finalAudience);  //поддерживаем OneToMany, ManyToOne
+    public Audience addEmployee(@RequestBody AudienceTemplate audience) {
+        //AudienceTemplate - объект, содержащий поля запроса
+        Audience finalAudience =  AudienceTemplate.convertAudienceTemplateToAudience(templateDataService, audience);
+        //строим объект Audience на основании параметров из тела запроса
         audienceService.saveAudience(finalAudience);
         return finalAudience;
     }
 
     @PutMapping("/")
     public Audience updateEmployee(@RequestBody AudienceTemplate audience) {
-        int capacity = audience.getCapacity();
-        String description = audience.getDescription();
-        Template template = templateDataService.getTemplates(audience.getTemplateId());
-
-        Audience finalAudience = new Audience(capacity, description, template);
-
-        template.addAudienceToTemplate(finalAudience);
+        //AudienceTemplate - объект, содержащий поля запроса
+        Audience finalAudience =  AudienceTemplate.convertAudienceTemplateToAudience(templateDataService, audience);
+        //строим объект Audience на основании параметров из тела запроса
         audienceService.saveAudience(finalAudience);
         return finalAudience;
     }

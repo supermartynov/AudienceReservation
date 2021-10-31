@@ -68,4 +68,8 @@ public class Audience {
                 ", template=" + template +
                 '}';
     }
+
+    public int getId() {
+        return id;
+    }
 }
