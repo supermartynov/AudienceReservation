@@ -6,6 +6,7 @@ import com.audience.booking.server.entity.ReservationCalendar;
 import com.audience.booking.server.exceptions.MyEntityNotFoundException;
 import com.audience.booking.server.service.AudienceDataService;
 import com.audience.booking.server.service.ClientDataService;
+import com.audience.booking.server.service.TemplateDataService;
 
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
@@ -30,29 +31,6 @@ public class ReservationClientAudience {
     public ReservationClientAudience() {
     }
 
-    public static ReservationCalendar convertReservationClientAudienceToReservationCalendar(AudienceDataService audienceDataService,
-                                                                                            ClientDataService clientDataService,
-                                                                                            ReservationClientAudience reservationClientAudience)
-    {
-        LocalDateTime startTime = reservationClientAudience.getStart();
-        LocalDateTime endTime = reservationClientAudience.getEnd();
-
-        Audience audienceId = null;
-        try {
-            audienceId = audienceDataService.getAudience(reservationClientAudience.getAudience());
-        } catch (NoSuchElementException exception) {
-            throw new MyEntityNotFoundException(reservationClientAudience.getAudience(), Audience.class.getSimpleName());
-        }
-
-        Client clientId = null;
-        try {
-            clientId = clientDataService.getClient(reservationClientAudience.getClient());
-        } catch (NoSuchElementException exception) {
-            throw new MyEntityNotFoundException(reservationClientAudience.getClient(), Client.class.getSimpleName());
-        }
-        //ниже создаем объект типа ReservationCalendar, на основании тела запроса
-        return new ReservationCalendar(startTime, endTime, clientId, audienceId);
-    }
 
     public LocalDateTime getStart() {
         return start;

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(code = HttpStatus.CONFLICT, reason = "Invalid time exception")
 public class AlreadyBookedException extends RuntimeException {
     public AlreadyBookedException(ReservationClientAudience reservationCalendar) {
-        super("Аудитория уже занята в интервале от " +
-                reservationCalendar.getStart().getHour() + "до " + reservationCalendar.getEnd().getHour());
+        super("Аудитория уже занята в промежуток времени от " +
+                reservationCalendar.getStart().getHour() + " до " + reservationCalendar.getEnd().getHour());
     }
 }
