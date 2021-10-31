@@ -5,10 +5,8 @@ package com.audience.booking.server.controllers;
 import com.audience.booking.server.entity.Audience;
 import com.audience.booking.server.entity.Client;
 import com.audience.booking.server.entity.ReservationCalendar;
-import com.audience.booking.server.exceptions.AlreadyBookedException;
-import com.audience.booking.server.exceptions.InvalidTimeException;
-import com.audience.booking.server.exceptions.MyEntityNotFoundException;
-import com.audience.booking.server.helpClasses.ReservationClientAudience;
+import com.audience.booking.server.exceptions.*;
+import com.audience.booking.server.help_classes.ReservationClientAudience;
 import com.audience.booking.server.service.AudienceDataService;
 import com.audience.booking.server.service.ClientDataService;
 import com.audience.booking.server.service.ReservationCalendarDataService;
@@ -16,7 +14,6 @@ import com.audience.booking.server.service.TemplateDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,9 +31,6 @@ public class ReservationCalendarRESTController {
 
     @Autowired
     private ClientDataService clientDataService;
-
-    @Autowired
-    private TemplateDataService templateDataService;
 
     @GetMapping("/")
     public List<ReservationCalendar> showAllEmployees() {
@@ -60,14 +54,17 @@ public class ReservationCalendarRESTController {
     @GetMapping("/calendar_list") //параметры: start_time, end_time, audience. Формат dateTime - 2011-10-20T10:23:54
     public List<ReservationCalendar> showCalendarList(HttpServletRequest request) {
 
-        //пример запроса - http://localhost:8080/reservation_calendar/calendar_list?start_time=2012-10-19T13:00:00&end_time=2012-10-20T14:00:00&audience_id=1
+        //пример запроса - http://localhost:8080/reservation_calendar/calendar_list?start_time=2021-10-19T13:00:00&end_time=2021-10-20T14:00:00&audience_id=1
         LocalDateTime start_time = LocalDateTime.parse(request.getParameter("start_time"));
         LocalDateTime end_time = LocalDateTime.parse(request.getParameter("end_time"));
+
+        if (start_time.isAfter(end_time)) {
+            throw new InvalidTimeException(start_time, end_time);
+        }
+
         Audience audience = audienceDataService.getAudience(Integer.parseInt(request.getParameter("audience_id")));
 
-        List<ReservationCalendar> list = reservationService.getAllReservationCalendarByIntervalAndAudience(start_time, end_time, audience);
-
-        return list;
+        return reservationService.getAllReservationCalendarByIntervalAndAudience(start_time, end_time, audience);
     }
 
     @PostMapping("/")
@@ -88,6 +85,10 @@ public class ReservationCalendarRESTController {
             throw new InvalidTimeException(startTime, endTime);
         }
 
+        if (startTime.getDayOfYear() != endTime.getDayOfYear()) {
+            throw new DifferentDayException(startTime, endTime);
+        }
+
         try {
             audienceId = audienceDataService.getAudience(reservationClientAudience.getAudience());
         } catch (NoSuchElementException exception) {
@@ -101,6 +102,11 @@ public class ReservationCalendarRESTController {
         }
 
         ReservationCalendar reservationCalendar = new ReservationCalendar(startTime, endTime, clientId, audienceId);
+
+        if (!ReservationCalendar.isValidTime(reservationCalendar)) { //проверка удовлетворяет ли временному шаблону запрос
+            throw new TimeSutisfyTemplateException(startTime, endTime, reservationCalendar.getAudience().getTemplate());
+        }
+
         reservationService.saveReservationCalendar(reservationCalendar);
         return reservationCalendar;
     }

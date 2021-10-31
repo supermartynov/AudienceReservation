@@ -3,9 +3,8 @@ package com.audience.booking.server.controllers;
 
 
 import com.audience.booking.server.entity.Audience;
-import com.audience.booking.server.entity.Template;
 import com.audience.booking.server.exceptions.MyEntityNotFoundException;
-import com.audience.booking.server.helpClasses.AudienceTemplate;
+import com.audience.booking.server.help_classes.AudienceTemplate;
 import com.audience.booking.server.service.AudienceDataService;
 import com.audience.booking.server.service.TemplateDataService;
 import org.springframework.beans.factory.annotation.Autowired;

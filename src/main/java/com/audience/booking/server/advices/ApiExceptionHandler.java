@@ -1,12 +1,8 @@
 package com.audience.booking.server.advices;
 
-import com.audience.booking.server.exceptions.AlreadyBookedException;
-import com.audience.booking.server.exceptions.ApiCustomException;
-import com.audience.booking.server.exceptions.InvalidTimeException;
-import com.audience.booking.server.exceptions.MyEntityNotFoundException;
+import com.audience.booking.server.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -29,6 +25,20 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(value = {InvalidTimeException.class})
     public ResponseEntity<Object> handleInvalidTimeException(InvalidTimeException err) {
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        ApiCustomException apiCustomException = new ApiCustomException(err.getMessage(), badRequest);
+        return new ResponseEntity<>(apiCustomException, badRequest);
+    }
+
+    @ExceptionHandler(value = {TimeSutisfyTemplateException.class})
+    public ResponseEntity<Object> handleTimeDontSutisfyTemplateException(TimeSutisfyTemplateException err) {
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        ApiCustomException apiCustomException = new ApiCustomException(err.getMessage(), badRequest);
+        return new ResponseEntity<>(apiCustomException, badRequest);
+    }
+
+    @ExceptionHandler(value = {DifferentDayException.class})
+    public ResponseEntity<Object> handleDifferentDayException(DifferentDayException err) {
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
         ApiCustomException apiCustomException = new ApiCustomException(err.getMessage(), badRequest);
         return new ResponseEntity<>(apiCustomException, badRequest);

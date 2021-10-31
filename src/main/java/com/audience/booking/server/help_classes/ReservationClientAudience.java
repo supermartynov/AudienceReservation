@@ -1,15 +1,6 @@
-package com.audience.booking.server.helpClasses;
-
-import com.audience.booking.server.entity.Audience;
-import com.audience.booking.server.entity.Client;
-import com.audience.booking.server.entity.ReservationCalendar;
-import com.audience.booking.server.exceptions.MyEntityNotFoundException;
-import com.audience.booking.server.service.AudienceDataService;
-import com.audience.booking.server.service.ClientDataService;
-import com.audience.booking.server.service.TemplateDataService;
+package com.audience.booking.server.help_classes;
 
 import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
 
 public class ReservationClientAudience {
     private LocalDateTime start;

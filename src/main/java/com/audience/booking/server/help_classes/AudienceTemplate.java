@@ -1,4 +1,4 @@
-package com.audience.booking.server.helpClasses;
+package com.audience.booking.server.help_classes;
 
 import com.audience.booking.server.entity.Audience;
 import com.audience.booking.server.entity.Template;
