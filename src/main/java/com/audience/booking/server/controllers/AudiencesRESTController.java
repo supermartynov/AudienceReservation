@@ -41,7 +41,20 @@ public class AudiencesRESTController {
     }
 
     @PostMapping("/")
-    public Audience addEmployee(@RequestBody AudienceTemplate audience) {
+    public Audience addEmployee(@RequestBody AudienceTemplate audience) { //AudienceTemplate - объект, содержащий поля запроса
+        int capacity = audience.getCapacity();
+        String description = audience.getDescription();
+        Template template = templateDataService.getTemplates(audience.getTemplateId());
+
+        Audience finalAudience = new Audience(capacity, description, template); //строим объект Audience на основании параметров
+                                                                                // из тела запроса
+        template.addAudienceToTemplate(finalAudience);  //поддерживаем OneToMany, ManyToOne
+        audienceService.saveAudience(finalAudience);
+        return finalAudience;
+    }
+
+    @PutMapping("/")
+    public Audience updateEmployee(@RequestBody AudienceTemplate audience) {
         int capacity = audience.getCapacity();
         String description = audience.getDescription();
         Template template = templateDataService.getTemplates(audience.getTemplateId());
@@ -51,12 +64,6 @@ public class AudiencesRESTController {
         template.addAudienceToTemplate(finalAudience);
         audienceService.saveAudience(finalAudience);
         return finalAudience;
-    }
-
-    @PutMapping("/")
-    public Audience updateEmployee(@RequestBody Audience audience) {
-        audienceService.saveAudience(audience);
-        return audience;
     }
 
     @DeleteMapping("/{id}")
