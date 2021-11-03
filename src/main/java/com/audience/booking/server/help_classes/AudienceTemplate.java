@@ -1,12 +1,5 @@
 package com.audience.booking.server.help_classes;
 
-import com.audience.booking.server.entity.Audience;
-import com.audience.booking.server.entity.Template;
-import com.audience.booking.server.exceptions.MyEntityNotFoundException;
-import com.audience.booking.server.service.TemplateDataService;
-
-import java.util.NoSuchElementException;
-
 public class AudienceTemplate {
     private int capacity;
     private String description;
@@ -19,23 +12,6 @@ public class AudienceTemplate {
     }
 
     public AudienceTemplate() {
-    }
-
-    public static Audience convertAudienceTemplateToAudience(TemplateDataService templateDataService, AudienceTemplate audience) {
-        int capacity = audience.getCapacity();
-        String description = audience.getDescription();
-        Template template = null;
-
-        try {
-            template = templateDataService.getTemplates(audience.getTemplate());
-        } catch (NoSuchElementException exception) {
-            throw new MyEntityNotFoundException(audience.getTemplate(), Template.class.getSimpleName());
-        }
-
-        Audience finalAudience = new Audience(capacity, description, template);
-        template.addAudienceToTemplate(finalAudience);
-
-        return finalAudience;
     }
 
     public int getCapacity() {

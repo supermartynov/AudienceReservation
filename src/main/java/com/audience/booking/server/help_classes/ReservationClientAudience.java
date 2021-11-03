@@ -11,7 +11,6 @@ public class ReservationClientAudience {
 
     private int audience;
 
-
     public ReservationClientAudience(LocalDateTime start, LocalDateTime end, int client, int audience) {
         this.start = start;
         this.end = end;
@@ -21,7 +20,6 @@ public class ReservationClientAudience {
 
     public ReservationClientAudience() {
     }
-
 
     public LocalDateTime getStart() {
         return start;

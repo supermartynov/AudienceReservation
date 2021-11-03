@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 public class TimeSutisfyTemplateException extends RuntimeException {
     public TimeSutisfyTemplateException(LocalDateTime start_time, LocalDateTime end_time, Template template) {
         super("Время в запросе не удовлетворяет расписанию, по которому работает аудитория" +
-                " Указанное начальное время - " + start_time.getHour() +
-                " Указанное конечное время - " + end_time.getHour() +
-                "Время по которому работает аудитория - с " + template.getStartTime() + " по " + template.getEndTime() +
+                " Время начала работы - " + start_time.getHour() +
+                " Время конца работы - " + end_time.getHour() +
+                " Время по которому работает аудитория - с " + template.getStartTime() + " по " + template.getEndTime() +
                 " ч.");
     }
 }

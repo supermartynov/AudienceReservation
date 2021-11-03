@@ -43,4 +43,18 @@ public class ApiExceptionHandler {
         ApiCustomException apiCustomException = new ApiCustomException(err.getMessage(), badRequest);
         return new ResponseEntity<>(apiCustomException, badRequest);
     }
+
+    @ExceptionHandler(value = {InvalidRequestFieldsException.class})
+    public ResponseEntity<Object> handleDifferentDayException(InvalidRequestFieldsException err) {
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        ApiCustomException apiCustomException = new ApiCustomException(err.getMessage(), badRequest);
+        return new ResponseEntity<>(apiCustomException, badRequest);
+    }
+
+    @ExceptionHandler(value = {AudienceAvailableException.class})
+    public ResponseEntity<Object> handleDifferentDayException(AudienceAvailableException err) {
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        ApiCustomException apiCustomException = new ApiCustomException(err.getMessage(), badRequest);
+        return new ResponseEntity<>(apiCustomException, badRequest);
+    }
 }

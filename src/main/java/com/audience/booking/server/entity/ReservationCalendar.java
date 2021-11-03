@@ -1,10 +1,6 @@
 package com.audience.booking.server.entity;
 
-import com.sun.istack.NotNull;
-import org.springframework.lang.NonNull;
-
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 

@@ -22,10 +22,6 @@ public class Audience {
     @JoinColumn(name = "template_id")
     private Template template;
 
-    /*@OneToMany
-    @JoinColumn(name = "audience_id")
-    private List<ReservationCalendar> audienceReservations;*/
-
     public Audience() {
     }
 

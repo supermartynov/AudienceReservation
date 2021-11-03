@@ -1,23 +1,13 @@
 package com.audience.booking.server.controllers;
 
-
-
-import com.audience.booking.server.entity.Audience;
-import com.audience.booking.server.entity.Client;
 import com.audience.booking.server.entity.ReservationCalendar;
-import com.audience.booking.server.exceptions.*;
 import com.audience.booking.server.help_classes.ReservationClientAudience;
-import com.audience.booking.server.service.AudienceDataService;
-import com.audience.booking.server.service.ClientDataService;
 import com.audience.booking.server.service.ReservationCalendarDataService;
-import com.audience.booking.server.service.TemplateDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/reservation_calendar")
@@ -26,12 +16,6 @@ public class ReservationCalendarRESTController {
     @Autowired
     private ReservationCalendarDataService reservationService;
 
-    @Autowired
-    private AudienceDataService audienceDataService;
-
-    @Autowired
-    private ClientDataService clientDataService;
-
     @GetMapping("/")
     public List<ReservationCalendar> showAllEmployees() {
          return reservationService.getAllReservationCalendar();
@@ -39,16 +23,7 @@ public class ReservationCalendarRESTController {
 
     @GetMapping("/{id}")
     public ReservationCalendar getReservationCalendar(@PathVariable int id) {
-
-        ReservationCalendar reservationCalendar = null;
-
-        try {
-            reservationCalendar = reservationService.getReservationCalendar(id);
-        } catch (NoSuchElementException exception) {
-            throw new MyEntityNotFoundException(id, ReservationCalendar.class.getSimpleName());
-        }
-
-        return reservationCalendar;
+        return reservationService.getReservationCalendar(id);
     }
 
     @GetMapping("/calendar_list") //параметры: start_time, end_time, audience. Формат dateTime - 2011-10-20T10:23:54
@@ -65,45 +40,7 @@ public class ReservationCalendarRESTController {
     @PostMapping("/")
     public ReservationCalendar addReservationCalendar(@RequestBody ReservationClientAudience reservationClientAudience) {
 
-        Audience audienceId = null;
-        Client clientId = null;
-        LocalDateTime startTime = reservationClientAudience.getStart();
-        LocalDateTime endTime = reservationClientAudience.getEnd();
-        Audience audience = audienceDataService.getAudience(reservationClientAudience.getAudience());
-
-        /*if (!reservationService.getAllReservationCalendarByIntervalAndAudience(reservationClientAudience.getStart(),
-                reservationClientAudience.getEnd(), audience).isEmpty()) { //находим все записи в заданный интервал и по заданной
-            throw new AlreadyBookedException(reservationClientAudience);  // аудитории
-        }*/
-
-        if (startTime.isAfter(endTime)) {
-            throw new InvalidTimeException(startTime, endTime);
-        }
-
-        if (startTime.getDayOfYear() != endTime.getDayOfYear()) {
-            throw new DifferentDayException(startTime, endTime);
-        }
-
-        try {
-            audienceId = audienceDataService.getAudience(reservationClientAudience.getAudience());
-        } catch (NoSuchElementException exception) {
-            throw new MyEntityNotFoundException(reservationClientAudience.getAudience(), Audience.class.getSimpleName());
-        }
-
-        try {
-            clientId = clientDataService.getClient(reservationClientAudience.getClient());
-        } catch (NoSuchElementException exception) {
-            throw new MyEntityNotFoundException(reservationClientAudience.getClient(), Client.class.getSimpleName());
-        }
-
-        ReservationCalendar reservationCalendar = new ReservationCalendar(startTime, endTime, clientId, audienceId);
-
-        if (!ReservationCalendar.isValidTime(reservationCalendar)) { //проверка удовлетворяет ли временному шаблону запрос
-            throw new TimeSutisfyTemplateException(startTime, endTime, reservationCalendar.getAudience().getTemplate());
-        }
-
-        reservationService.saveReservationCalendar(reservationCalendar);
-        return reservationCalendar;
+        return reservationService.saveReservationCalendar(reservationClientAudience);
     }
 
     @PutMapping("/")
