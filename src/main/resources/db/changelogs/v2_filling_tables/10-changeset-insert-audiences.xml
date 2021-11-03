@@ -8,13 +8,18 @@
     <changeSet id="9" author="Martynov Daniil">
         <insert tableName="audiences">
             <column name="capacity" value="15"/>
-            <column name="description" value="Аудитория подойдет для переговора, м. Щукинская"/>
+            <column name="description" value="Аудитория подойдет для переговоров, м. Щукинская"/>
             <column name="template_id" value="1"/>
         </insert>
         <insert tableName="audiences">
             <column name="capacity" value="10"/>
-            <column name="description" value="Аудитория подойдет для переговора, м. Кантемировская"/>
+            <column name="description" value="Аудитория подойдет для переговоров, м. Кантемировская"/>
             <column name="template_id" value="2"/>
+        </insert>
+        <insert tableName="audiences">
+            <column name="capacity" value="10"/>
+            <column name="description" value="Аудитория подойдет для переговоров м. Кантемировская. Сейчас не работает"/>
+            <column name="template_id" value="3"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

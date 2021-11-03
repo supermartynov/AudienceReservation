@@ -40,6 +40,7 @@ public class ReservationCalendarRESTController {
     @PostMapping("/")
     public ReservationCalendar addReservationCalendar(@RequestBody ReservationClientAudience reservationClientAudience) {
 
+        System.out.println(reservationClientAudience);
         return reservationService.saveReservationCalendar(reservationClientAudience);
     }
 

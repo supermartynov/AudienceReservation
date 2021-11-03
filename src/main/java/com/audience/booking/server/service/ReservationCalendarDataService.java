@@ -47,9 +47,25 @@ public class ReservationCalendarDataService  {
         LocalDateTime endTime = reservationClientAudience.getEnd();
         Audience audience = audienceDataService.getAudience(reservationClientAudience.getAudience());
 
-        if (!reservationService.getAllReservationCalendarByIntervalAndAudience(reservationClientAudience.getStart(),
-                reservationClientAudience.getEnd(), audience).isEmpty()) { //находим все записи в заданный интервал и по заданной
-            throw new AlreadyBookedException(reservationClientAudience);  // аудитории
+        List<ReservationCalendar> reservationCalendarList = reservationService.getAllReservationCalendarByIntervalAndAudience(reservationClientAudience.getStart(),
+                reservationClientAudience.getEnd(), audience); //находим все записи в заданный интервал и по заданной аудитории
+        //следующие проверки предназначены для возможности непрерывного бронирования (Бронь1: 17:00-18:00; Бронь2: 18:00-19:00)
+        if ((reservationCalendarList.size() > 1)) {
+            if (!reservationCalendarList.get(reservationCalendarList.size() - 1).getStart().equals(endTime)) {
+                System.out.println("Попал в 1 проверку");
+                throw new AlreadyBookedException(reservationClientAudience);
+            }
+
+            if (!reservationCalendarList.get(0).getEnd().equals(startTime)) {
+                System.out.println("попал во вторую проврку");
+                throw new AlreadyBookedException(reservationClientAudience);
+            }
+        } else if (reservationCalendarList.size() == 1) {
+            if (!(reservationCalendarList.get(0).getStart().isEqual(endTime) || reservationCalendarList.get(0).getEnd().isEqual(startTime))) {
+                System.out.println("Попал в 3 проверку");
+                System.out.println("То что имеется в таблице");
+                throw new AlreadyBookedException(reservationClientAudience);
+            }
         }
 
         if (startTime.isAfter(endTime)) {  //начальное время позже конечного
@@ -60,14 +76,14 @@ public class ReservationCalendarDataService  {
             throw new DifferentDayException(startTime, endTime);
         }
 
-        if (audience.getTemplate().isAvailavle()) { //работает ли аудитория
-            throw new AudienceAvailableException(audience.getId());
-        }
-
         try {
             audienceId = audienceDataService.getAudience(reservationClientAudience.getAudience());
         } catch (NoSuchElementException exception) {
             throw new MyEntityNotFoundException(reservationClientAudience.getAudience(), Audience.class.getSimpleName());
+        }
+
+        if (audienceId.getTemplate().isAvailavle()) { //работает ли аудитория
+            throw new AudienceAvailableException(audience.getId());
         }
 
         try {
