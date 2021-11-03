@@ -55,14 +55,9 @@ public class ReservationCalendarRESTController {
     public List<ReservationCalendar> showCalendarList(HttpServletRequest request) {
 
         //пример запроса - http://localhost:8080/reservation_calendar/calendar_list?start_time=2021-10-19T13:00:00&end_time=2021-10-20T14:00:00&audience_id=1
-        LocalDateTime start_time = LocalDateTime.parse(request.getParameter("start_time"));
-        LocalDateTime end_time = LocalDateTime.parse(request.getParameter("end_time"));
-
-        if (start_time.isAfter(end_time)) {
-            throw new InvalidTimeException(start_time, end_time);
-        }
-
-        Audience audience = audienceDataService.getAudience(Integer.parseInt(request.getParameter("audience_id")));
+        String start_time = request.getParameter("start_time");
+        String end_time = request.getParameter("end_time");
+        String audience = request.getParameter("audience_id");
 
         return reservationService.getAllReservationCalendarByIntervalAndAudience(start_time, end_time, audience);
     }
@@ -76,10 +71,10 @@ public class ReservationCalendarRESTController {
         LocalDateTime endTime = reservationClientAudience.getEnd();
         Audience audience = audienceDataService.getAudience(reservationClientAudience.getAudience());
 
-        if (!reservationService.getAllReservationCalendarByIntervalAndAudience(reservationClientAudience.getStart(),
+        /*if (!reservationService.getAllReservationCalendarByIntervalAndAudience(reservationClientAudience.getStart(),
                 reservationClientAudience.getEnd(), audience).isEmpty()) { //находим все записи в заданный интервал и по заданной
             throw new AlreadyBookedException(reservationClientAudience);  // аудитории
-        }
+        }*/
 
         if (startTime.isAfter(endTime)) {
             throw new InvalidTimeException(startTime, endTime);

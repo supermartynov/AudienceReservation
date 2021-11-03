@@ -3,6 +3,7 @@ package com.audience.booking.server.service;
 import com.audience.booking.server.dao.ReservationCalendarDAO;
 import com.audience.booking.server.entity.Audience;
 import com.audience.booking.server.entity.ReservationCalendar;
+import com.audience.booking.server.exceptions.InvalidTimeException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +15,14 @@ import java.util.List;
 
 @Service
 public class ReservationCalendarDataService  {
+    @Autowired
+    private ReservationCalendarDataService reservationService;
+
+    @Autowired
+    private AudienceDataService audienceDataService;
+
+    @Autowired
+    private ClientDataService clientDataService;
 
     @Autowired
     private ReservationCalendarDAO reservationCalendarCrudRepository;
@@ -39,7 +48,16 @@ public class ReservationCalendarDataService  {
     }
 
     @Transactional
-    public List<ReservationCalendar> getAllReservationCalendarByIntervalAndAudience(LocalDateTime start_time, LocalDateTime end_time, Audience audience) {
+    public List<ReservationCalendar> getAllReservationCalendarByIntervalAndAudience(String start, String end, String audienceId) {
+        LocalDateTime start_time = LocalDateTime.parse(start);
+        LocalDateTime end_time = LocalDateTime.parse(end);
+
+        if (start_time.isAfter(end_time)) {
+            throw new InvalidTimeException(start_time, end_time);
+        }
+
+        Audience audience = audienceDataService.getAudience(Integer.parseInt(audienceId));
+
         return reservationCalendarCrudRepository.getAllReservationCalendarInterval(start_time, end_time, audience);
     }
 

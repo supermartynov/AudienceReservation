@@ -21,10 +21,6 @@ public class Client {
     @Column(name = "password")
     private String password;
 
-    /*@OneToMany()
-    @JoinColumn(name = "client_id")
-    private List<ReservationCalendar> clientReservations;*/
-
     public Client() {
     }
 
