@@ -52,4 +52,12 @@ public class Client {
         this.password = password;
     }
 
+    @Override
+    public String toString() {
+        return "Client{" +
+                "name='" + name + '\'' +
+                ", mail='" + mail + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }

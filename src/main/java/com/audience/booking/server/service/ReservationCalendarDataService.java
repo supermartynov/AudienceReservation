@@ -5,12 +5,14 @@ import com.audience.booking.server.entity.Audience;
 import com.audience.booking.server.entity.Client;
 import com.audience.booking.server.entity.ReservationCalendar;
 import com.audience.booking.server.exceptions.*;
-import com.audience.booking.server.help_classes.ReservationClientAudience;
+import com.audience.booking.server.help_classes.ReservationCalendarRequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -34,67 +36,78 @@ public class ReservationCalendarDataService  {
     }
 
     @Transactional
-    public ReservationCalendar saveReservationCalendar(ReservationClientAudience reservationClientAudience) {
+    public ReservationCalendar saveReservationCalendar(ReservationCalendarRequestBody reservationCalendarRequestBody) {
 
-        if (reservationClientAudience.getStart() == null || reservationClientAudience.getEnd() == null
-                || reservationClientAudience.getClient() == 0 || reservationClientAudience.getAudience() == 0) {
+        if (reservationCalendarRequestBody.getStart() == null || reservationCalendarRequestBody.getEnd() == null
+                || reservationCalendarRequestBody.getClient() <= 0 || reservationCalendarRequestBody.getAudience() <= 0) {
             throw new InvalidRequestFieldsException();
         }
 
-        Audience audienceId = null;
-        Client clientId = null;
-        LocalDateTime startTime = reservationClientAudience.getStart();
-        LocalDateTime endTime = reservationClientAudience.getEnd();
-        Audience audience = audienceDataService.getAudience(reservationClientAudience.getAudience());
+        Audience audience = null;
+        Client client = null;
+        LocalDateTime startTime = reservationCalendarRequestBody.getStart();
+        LocalDateTime endTime = reservationCalendarRequestBody.getEnd();
 
-        List<ReservationCalendar> reservationCalendarList = reservationService.getAllReservationCalendarByIntervalAndAudience(reservationClientAudience.getStart(),
-                reservationClientAudience.getEnd(), audience); //находим все записи в заданный интервал и по заданной аудитории
+        if (ReservationCalendar.getMinutesFromTime(endTime) - ReservationCalendar.getMinutesFromTime(startTime) < 60
+                ||  (ReservationCalendar.getMinutesFromTime(endTime) - ReservationCalendar.getMinutesFromTime(startTime)) % 30 != 0)
+        {
+            throw new MinBookingTimeException();
+        }
+
+        try {
+            audience = audienceDataService.getAudience(reservationCalendarRequestBody.getAudience());
+        } catch (NoSuchElementException exception) {
+            throw new MyEntityNotFoundException(reservationCalendarRequestBody.getAudience(), Audience.class.getSimpleName());
+        }
+
+        try {
+            client = clientDataService.getClient(reservationCalendarRequestBody.getClient());
+        } catch (NoSuchElementException exception) {
+            throw new MyEntityNotFoundException(reservationCalendarRequestBody.getClient(), Client.class.getSimpleName());
+        }
+
+        //находим все записи в заданный интервал и по заданной аудитории
+        List<ReservationCalendar> reservationCalendarList = reservationService.getAllReservationCalendarByIntervalAndAudience(reservationCalendarRequestBody.getStart(),
+                reservationCalendarRequestBody.getEnd(), audience);
+
         //следующие проверки предназначены для возможности непрерывного бронирования (Бронь1: 17:00-18:00; Бронь2: 18:00-19:00)
         if ((reservationCalendarList.size() > 1)) {
             if (!reservationCalendarList.get(reservationCalendarList.size() - 1).getStart().equals(endTime)) {
-                System.out.println("Попал в 1 проверку");
-                throw new AlreadyBookedException(reservationClientAudience);
+                throw new AlreadyBookedException(reservationCalendarRequestBody);
             }
 
             if (!reservationCalendarList.get(0).getEnd().equals(startTime)) {
-                System.out.println("попал во вторую проврку");
-                throw new AlreadyBookedException(reservationClientAudience);
+                throw new AlreadyBookedException(reservationCalendarRequestBody);
             }
         } else if (reservationCalendarList.size() == 1) {
             if (!(reservationCalendarList.get(0).getStart().isEqual(endTime) || reservationCalendarList.get(0).getEnd().isEqual(startTime))) {
-                System.out.println("Попал в 3 проверку");
-                System.out.println("То что имеется в таблице");
-                throw new AlreadyBookedException(reservationClientAudience);
+                throw new AlreadyBookedException(reservationCalendarRequestBody);
             }
         }
 
-        if (startTime.isAfter(endTime)) {  //начальное время позже конечного
+        //начальное время позже конечного
+        if (startTime.isAfter(endTime)) {
             throw new InvalidTimeException(startTime, endTime);
         }
 
-        if (startTime.getDayOfYear() != endTime.getDayOfYear()) { //попытка брони в разные дни
+        //попытка брони в разные дни
+        if (startTime.getDayOfYear() != endTime.getDayOfYear()) {
             throw new DifferentDayException(startTime, endTime);
         }
 
-        try {
-            audienceId = audienceDataService.getAudience(reservationClientAudience.getAudience());
-        } catch (NoSuchElementException exception) {
-            throw new MyEntityNotFoundException(reservationClientAudience.getAudience(), Audience.class.getSimpleName());
+        //попытка бронирования в прошлое или за 90 дней от сегодня
+        if (startTime.isBefore(LocalDateTime.now()) || startTime.isAfter(LocalDateTime.now().plusDays(90))) {
+            throw new SoonerOrLaterException(startTime);
         }
 
-        if (audienceId.getTemplate().isAvailavle()) { //работает ли аудитория
+        if (!audience.getTemplate().isAvailavle()) {
             throw new AudienceAvailableException(audience.getId());
         }
 
-        try {
-            clientId = clientDataService.getClient(reservationClientAudience.getClient());
-        } catch (NoSuchElementException exception) {
-            throw new MyEntityNotFoundException(reservationClientAudience.getClient(), Client.class.getSimpleName());
-        }
+        ReservationCalendar reservationCalendar = new ReservationCalendar(startTime, endTime, client, audience);
 
-        ReservationCalendar reservationCalendar = new ReservationCalendar(startTime, endTime, clientId, audienceId);
-
-        if (!ReservationCalendar.isValidTime(reservationCalendar)) { //проверка удовлетворяет ли временному шаблону запрос
+        //проверка удовлетворяет ли временному шаблону запрос
+        if (!ReservationCalendar.isValidTime(reservationCalendar)) {
             throw new TimeSutisfyTemplateException(startTime, endTime, reservationCalendar.getAudience().getTemplate());
         }
 
@@ -117,8 +130,17 @@ public class ReservationCalendarDataService  {
     }
 
     @Transactional
-    public void deleteReservationCalendar(int id) {
+    public ReservationCalendar deleteReservationCalendar(int id) {
+        ReservationCalendar reservationCalendar = null;
+
+        try {
+            reservationCalendar = reservationCalendarCrudRepository.findById(id).get();
+        } catch (NoSuchElementException err) {
+            throw new MyEntityNotFoundException(id, ReservationCalendar.class.getSimpleName());
+        }
+
         reservationCalendarCrudRepository.deleteById(id);
+        return reservationCalendar;
     }
 
     @Transactional

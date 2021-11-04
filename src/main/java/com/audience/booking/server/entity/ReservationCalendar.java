@@ -54,6 +54,10 @@ public class ReservationCalendar {
         return true;
     }
 
+    public static int getMinutesFromTime(LocalDateTime localDateTime) {
+        return localDateTime.getHour() * 60 + localDateTime.getMinute() + localDateTime.getSecond() / 60;
+    }
+
     public LocalDateTime getStart() {
         return start;
     }
@@ -76,5 +80,19 @@ public class ReservationCalendar {
 
     public Audience getAudience() {
         return audience;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public String toString() {
+        return "ReservationCalendar{" +
+                "start=" + start +
+                ", end=" + end +
+                ", client=" + client +
+                ", audience=" + audience +
+                '}';
     }
 }

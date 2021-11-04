@@ -2,7 +2,7 @@ package com.audience.booking.server.help_classes;
 
 import java.time.LocalDateTime;
 
-public class ReservationClientAudience {
+public class ReservationCalendarRequestBody {
     private LocalDateTime start;
 
     private LocalDateTime end;
@@ -11,14 +11,14 @@ public class ReservationClientAudience {
 
     private int audience;
 
-    public ReservationClientAudience(LocalDateTime start, LocalDateTime end, int client, int audience) {
+    public ReservationCalendarRequestBody(LocalDateTime start, LocalDateTime end, int client, int audience) {
         this.start = start;
         this.end = end;
         this.client = client;
         this.audience = audience;
     }
 
-    public ReservationClientAudience() {
+    public ReservationCalendarRequestBody() {
     }
 
     public LocalDateTime getStart() {

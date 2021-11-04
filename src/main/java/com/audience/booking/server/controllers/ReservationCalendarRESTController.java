@@ -1,7 +1,7 @@
 package com.audience.booking.server.controllers;
 
 import com.audience.booking.server.entity.ReservationCalendar;
-import com.audience.booking.server.help_classes.ReservationClientAudience;
+import com.audience.booking.server.help_classes.ReservationCalendarRequestBody;
 import com.audience.booking.server.service.ReservationCalendarDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -38,15 +38,13 @@ public class ReservationCalendarRESTController {
     }
 
     @PostMapping("/")
-    public ReservationCalendar addReservationCalendar(@RequestBody ReservationClientAudience reservationClientAudience) {
-
-        System.out.println(reservationClientAudience);
-        return reservationService.saveReservationCalendar(reservationClientAudience);
+    public ReservationCalendar addReservationCalendar(@RequestBody ReservationCalendarRequestBody reservationCalendarRequestBody) {
+        return reservationService.saveReservationCalendar(reservationCalendarRequestBody);
     }
 
     @PutMapping("/")
-    public ReservationCalendar updateReservationCalendar(@RequestBody ReservationClientAudience reservationClientAudience) {
-        return addReservationCalendar(reservationClientAudience);
+    public ReservationCalendar updateReservationCalendar(@RequestBody ReservationCalendarRequestBody reservationCalendarRequestBody) {
+        return addReservationCalendar(reservationCalendarRequestBody);
     }
 
     @DeleteMapping("/{id}")

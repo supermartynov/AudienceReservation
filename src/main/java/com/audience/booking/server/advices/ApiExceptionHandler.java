@@ -45,15 +45,29 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(value = {InvalidRequestFieldsException.class})
-    public ResponseEntity<Object> handleDifferentDayException(InvalidRequestFieldsException err) {
+    public ResponseEntity<Object> handleInvalidRequestFieldsException(InvalidRequestFieldsException err) {
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
         ApiCustomException apiCustomException = new ApiCustomException(err.getMessage(), badRequest);
         return new ResponseEntity<>(apiCustomException, badRequest);
     }
 
     @ExceptionHandler(value = {AudienceAvailableException.class})
-    public ResponseEntity<Object> handleDifferentDayException(AudienceAvailableException err) {
+    public ResponseEntity<Object> handleAudienceAvailableException(AudienceAvailableException err) {
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        ApiCustomException apiCustomException = new ApiCustomException(err.getMessage(), badRequest);
+        return new ResponseEntity<>(apiCustomException, badRequest);
+    }
+
+    @ExceptionHandler(value = {SoonerOrLaterException.class})
+    public ResponseEntity<Object> handleSoonerOrLaterException(SoonerOrLaterException err) {
+        HttpStatus badRequest = HttpStatus.CONFLICT;
+        ApiCustomException apiCustomException = new ApiCustomException(err.getMessage(), badRequest);
+        return new ResponseEntity<>(apiCustomException, badRequest);
+    }
+
+    @ExceptionHandler(value = {MinBookingTimeException.class})
+    public ResponseEntity<Object> handleSoonerOrLaterException(MinBookingTimeException err) {
+        HttpStatus badRequest = HttpStatus.CONFLICT;
         ApiCustomException apiCustomException = new ApiCustomException(err.getMessage(), badRequest);
         return new ResponseEntity<>(apiCustomException, badRequest);
     }

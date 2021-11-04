@@ -1,17 +1,17 @@
 package com.audience.booking.server.help_classes;
 
-public class AudienceTemplate {
+public class AudienceRequestBody {
     private int capacity;
     private String description;
     private int template;
 
-    public AudienceTemplate(int capacity, String description, int template) {
+    public AudienceRequestBody(int capacity, String description, int template) {
         this.capacity = capacity;
         this.description = description;
         this.template = template;
     }
 
-    public AudienceTemplate() {
+    public AudienceRequestBody() {
     }
 
     public int getCapacity() {

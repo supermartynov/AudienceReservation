@@ -6,7 +6,7 @@ import com.audience.booking.server.dao.TemplatesDAO;
 import com.audience.booking.server.entity.Audience;
 import com.audience.booking.server.entity.Template;
 import com.audience.booking.server.exceptions.MyEntityNotFoundException;
-import com.audience.booking.server.help_classes.AudienceTemplate;
+import com.audience.booking.server.help_classes.AudienceRequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,11 +29,11 @@ public class AudienceDataService {
     }
 
     @Transactional
-    public Audience saveAudience(AudienceTemplate audienceTemplate) {
+    public Audience saveAudience(AudienceRequestBody audienceRequestBody) {
 
-        int capacity = audienceTemplate.getCapacity();
-        String description = audienceTemplate.getDescription();
-        Template template = templatesCRUDRepository.findById(audienceTemplate.getTemplate()).get();
+        int capacity = audienceRequestBody.getCapacity();
+        String description = audienceRequestBody.getDescription();
+        Template template = templatesCRUDRepository.findById(audienceRequestBody.getTemplate()).get();
 
         Audience audience = new Audience(capacity, description, template);
         audienceCrudRepository.save(audience);
@@ -49,7 +49,6 @@ public class AudienceDataService {
         } catch (NoSuchElementException err) {
             throw new MyEntityNotFoundException(id, Audience.class.getSimpleName());
         }
-
         return audience;
     }
 

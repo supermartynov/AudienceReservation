@@ -6,13 +6,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.time.LocalDateTime;
 
-@ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "Невалидное время")
+@ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "Not valid time")
 public class TimeSutisfyTemplateException extends RuntimeException {
     public TimeSutisfyTemplateException(LocalDateTime start_time, LocalDateTime end_time, Template template) {
-        super("Время в запросе не удовлетворяет расписанию, по которому работает аудитория" +
-                " Время начала работы - " + start_time.getHour() +
-                " Время конца работы - " + end_time.getHour() +
-                " Время по которому работает аудитория - с " + template.getStartTime() + " по " + template.getEndTime() +
+        super("Время в запросе не удовлетворяет расписанию, по которому работает аудитория." +
+                " Время начала брони - " + start_time.getHour() +
+                ". Время конца брони - " + end_time.getHour() +
+                ". Время по которому работает аудитория - с " + template.getStartTime() + " по " + template.getEndTime() +
                 " ч.");
     }
 }

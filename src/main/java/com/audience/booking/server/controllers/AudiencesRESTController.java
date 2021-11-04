@@ -3,8 +3,7 @@ package com.audience.booking.server.controllers;
 
 
 import com.audience.booking.server.entity.Audience;
-import com.audience.booking.server.exceptions.MyEntityNotFoundException;
-import com.audience.booking.server.help_classes.AudienceTemplate;
+import com.audience.booking.server.help_classes.AudienceRequestBody;
 import com.audience.booking.server.service.AudienceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,12 +28,12 @@ public class AudiencesRESTController {
     }
 
     @PostMapping("/")
-    public Audience addEmployee(@RequestBody AudienceTemplate audience) {
+    public Audience addEmployee(@RequestBody AudienceRequestBody audience) {
         return  audienceService.saveAudience(audience);
     }
 
     @PutMapping("/")
-    public Audience updateEmployee(@RequestBody AudienceTemplate audience) {
+    public Audience updateEmployee(@RequestBody AudienceRequestBody audience) {
         return  audienceService.saveAudience(audience);
     }
 
