@@ -1,7 +1,7 @@
 package com.audience.booking.server.controllers;
 
 import com.audience.booking.server.entity.ReservationCalendar;
-import com.audience.booking.server.help_classes.ReservationCalendarRequestBody;
+import com.audience.booking.server.request_bodies.ReservationCalendarRequestBody;
 import com.audience.booking.server.service.ReservationCalendarDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

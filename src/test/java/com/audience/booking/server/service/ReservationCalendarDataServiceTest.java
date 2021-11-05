@@ -2,7 +2,7 @@ package com.audience.booking.server.service;
 
 import com.audience.booking.server.entity.ReservationCalendar;
 import com.audience.booking.server.exceptions.*;
-import com.audience.booking.server.help_classes.ReservationCalendarRequestBody;
+import com.audience.booking.server.request_bodies.ReservationCalendarRequestBody;
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,4 +1,4 @@
-package com.audience.booking.server.help_classes;
+package com.audience.booking.server.request_bodies;
 
 import java.time.LocalDateTime;
 

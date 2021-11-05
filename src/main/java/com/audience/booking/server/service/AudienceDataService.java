@@ -6,7 +6,7 @@ import com.audience.booking.server.dao.TemplatesDAO;
 import com.audience.booking.server.entity.Audience;
 import com.audience.booking.server.entity.Template;
 import com.audience.booking.server.exceptions.MyEntityNotFoundException;
-import com.audience.booking.server.help_classes.AudienceRequestBody;
+import com.audience.booking.server.request_bodies.AudienceRequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,6 +55,11 @@ public class AudienceDataService {
     @Transactional
     public void deleteAudience(int id) {
         audienceCrudRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteAllAudiences() {
+        audienceCrudRepository.deleteAll();
     }
 
 }

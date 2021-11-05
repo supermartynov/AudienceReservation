@@ -5,7 +5,7 @@ import com.audience.booking.server.entity.Audience;
 import com.audience.booking.server.entity.Client;
 import com.audience.booking.server.entity.ReservationCalendar;
 import com.audience.booking.server.exceptions.*;
-import com.audience.booking.server.help_classes.ReservationCalendarRequestBody;
+import com.audience.booking.server.request_bodies.ReservationCalendarRequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -14,7 +14,7 @@ public class AudiencesRESTController {
     @Autowired
     private AudienceDataService audienceService;
 
-    @GetMapping("/")
+    @GetMapping("")
     public List<Audience> showAllAudiences() {
          return audienceService.getAllAudiences();
     }
@@ -22,6 +22,11 @@ public class AudiencesRESTController {
     @GetMapping("/{id}")
     public Audience getAudience(@PathVariable int id) {
         return audienceService.getAudience(id);
+    }
+
+    @DeleteMapping("")
+    public void getAudience() {
+         audienceService.deleteAllAudiences();
     }
 
 }

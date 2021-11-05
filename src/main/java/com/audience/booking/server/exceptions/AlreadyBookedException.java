@@ -1,6 +1,6 @@
 package com.audience.booking.server.exceptions;
 
-import com.audience.booking.server.help_classes.ReservationCalendarRequestBody;
+import com.audience.booking.server.request_bodies.ReservationCalendarRequestBody;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
