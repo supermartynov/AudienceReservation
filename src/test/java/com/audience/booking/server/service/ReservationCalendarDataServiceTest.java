@@ -3,16 +3,13 @@ package com.audience.booking.server.service;
 import com.audience.booking.server.entity.ReservationCalendar;
 import com.audience.booking.server.exceptions.*;
 import com.audience.booking.server.help_classes.ReservationCalendarRequestBody;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
@@ -26,12 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class ReservationCalendarDataServiceTest {
     @Autowired
     private ReservationCalendarDataService reservationCalendarDataService;
-
-    @Autowired
-    private AudienceDataService audienceDataService;
-
-    @Autowired
-    private ClientDataService clientDataService;
 
     static final List<ReservationCalendarRequestBody> bookingsForTests = new ArrayList<>() {};
 
@@ -126,7 +117,12 @@ class ReservationCalendarDataServiceTest {
     }
 
     @BeforeEach
-    void deleteAllBookings() {
+    void deleteAllBookingsBeforeTest() {
+        reservationCalendarDataService.deleteAllBookings();
+    }
+
+    @AfterEach
+    void deleteAllBookingsAfterTest() {
         reservationCalendarDataService.deleteAllBookings();
     }
 
@@ -135,8 +131,7 @@ class ReservationCalendarDataServiceTest {
         //Время бронирование должно быть >= 60 минутам
         //Бронируем с 2021-11-18 12:00:00 по 2021-11-18 12:10:00 аудиторию 2
         assertThrows(MinBookingTimeException.class, () -> {
-            ReservationCalendar firstBooking = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(1));
-            reservationCalendarDataService.deleteReservationCalendar(firstBooking.getId());
+            reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(1));
             System.out.println("Выброшено исключение:  " + MinBookingTimeException.class.getSimpleName());
         }, "Попытка сделать запись длинной в 10 минут");
 
@@ -148,8 +143,7 @@ class ReservationCalendarDataServiceTest {
         //Время бронирование должно быть кратно 30 минутам.
         //Бронируем с 2021-11-18 12:00:00 по 2021-11-18 13:20:00 аудиторию 2
         assertThrows(MinBookingTimeException.class, () -> {
-            ReservationCalendar reservationCalendar = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(2));
-            reservationCalendarDataService.deleteReservationCalendar(reservationCalendar.getId());
+            reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(2));
             System.out.println("Выброшено исключение:  " + MinBookingTimeException.class.getSimpleName());
         }, "Попытка бронирование времени на диапазон некратный 30 минутам");
 
@@ -165,8 +159,6 @@ class ReservationCalendarDataServiceTest {
 
         Assert.assertEquals(booking.toString(), reservationCalendarDataService.getReservationCalendar(id).toString());
 
-        System.out.println(booking);
-        reservationCalendarDataService.deleteReservationCalendar(id);
         System.out.println("Тест testMinBookingTimeExceptionForValidTime пройден");
     }
 
@@ -175,15 +167,12 @@ class ReservationCalendarDataServiceTest {
         // Тест на попытку брони недоступной даты
         //Бронируем с 2021-11-18 11:00:00 по 2021-11-18 12:00:00 аудиторию 2
         ReservationCalendar booking = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(0));
-        int id = booking.getId();
         //попытаемся забронировать аудиторию 2 с 2021-11-18 11:30:00 по 2021-11-18 12:30:00
         assertThrows(AlreadyBookedException.class, () -> {
-            ReservationCalendar reservationCalendar = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(3));
-            reservationCalendarDataService.deleteReservationCalendar(reservationCalendar.getId());
+            reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(3));
             System.out.println("Выброшено исключение:  " + AlreadyBookedException.class.getSimpleName());
         }, "Попытка забронировать на недоступное время");
 
-        reservationCalendarDataService.deleteReservationCalendar(id);
         System.out.println("Тест testAlreadyBookedException пройден");
     }
 
@@ -192,19 +181,14 @@ class ReservationCalendarDataServiceTest {
         //Тест на проверку возможности непрерывного бронирования
         //Бронируем с 2021-11-18 11:00:00 по 2021-11-18 12:00:00 аудиторию 2
         ReservationCalendar bookingFirst = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(0));
-        int idFirst = bookingFirst.getId();
         //Бронируем с 2021-11-18 13:00:00 по 2021-11-18 14:00:00 аудиторию 2
         ReservationCalendar bookingSecond = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(5));
-        int idSecond = bookingSecond.getId();
         //попытаемся забронировать аудиторию 2 с 2021-11-18 12:00:00 по 2021-11-18 13:00:00
         ReservationCalendar bookingThird = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(4));
         int idThird = bookingThird.getId();
 
         Assert.assertEquals(bookingThird.toString(), reservationCalendarDataService.getReservationCalendar(idThird).toString());
 
-        reservationCalendarDataService.deleteReservationCalendar(idFirst);
-        reservationCalendarDataService.deleteReservationCalendar(idSecond);
-        reservationCalendarDataService.deleteReservationCalendar(idThird);
         System.out.println("Тест testPermanentlyBooking пройден");
     }
 
@@ -213,8 +197,7 @@ class ReservationCalendarDataServiceTest {
         //Тест на проверку запрета брони начинающейся в один день и заканчивающейся в другой
         //Бронируем с 2021-11-18 13:00:00 по 2021-11-19 14:00:00 аудиторию 2
         assertThrows(DifferentDayException.class, () -> {
-            ReservationCalendar reservationCalendar = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(7));
-            reservationCalendarDataService.deleteReservationCalendar(reservationCalendar.getId());
+            reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(7));
             System.out.println("Выброшено исключение:  " + DifferentDayException.class.getSimpleName());
         }, "Попытка забронировать в разные дни");
 
@@ -226,8 +209,7 @@ class ReservationCalendarDataServiceTest {
         //Тест на проверку запрета брони в прошлое
         //Бронируем с 2021-11-1 13:00:00 по 2021-11-1 17:30:00 аудиторию 2
         assertThrows(SoonerOrLaterException.class, () -> {
-            ReservationCalendar reservationCalendar = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(8));
-            reservationCalendarDataService.deleteReservationCalendar(reservationCalendar.getId());
+            reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(8));
             System.out.println("Выброшено исключение:  " + SoonerOrLaterException.class.getSimpleName());
         }, "Попытка забронировать в прошлое");
 
@@ -239,8 +221,7 @@ class ReservationCalendarDataServiceTest {
         //Тест на проверку запрета брони в будущее (бронь возможна ближайшие 90 дней, начиная с текущего времени)
         //Бронируем с 2022-03-17 16:00:00 по 2022-03-17 18:30:00 аудиторию 2
         assertThrows(SoonerOrLaterException.class, () -> {
-            ReservationCalendar reservationCalendar = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(9));
-            reservationCalendarDataService.deleteReservationCalendar(reservationCalendar.getId());
+            reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(9));
             System.out.println("Выброшено исключение:  " + SoonerOrLaterException.class.getSimpleName());
         }, "Попытка забронировать в далекое будещее");
 
@@ -251,9 +232,9 @@ class ReservationCalendarDataServiceTest {
     void testAudienceAvailableException() {
         //Тест на проверку запрета брони аудитории, в шаблоне которой указано, что аудитории не работает на данный момент
         //Бронируем с 2021-11-18 13:00:00 по 2021-11-18 13:00:00 аудиторию 3, которая недоступна
+
         assertThrows(AudienceAvailableException.class, () -> {
-            ReservationCalendar reservationCalendar = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(6));
-            reservationCalendarDataService.deleteReservationCalendar(reservationCalendar.getId());
+            reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(6));
             System.out.println("Выброшено исключение:  " + AudienceAvailableException.class.getSimpleName());
         }, "Попытка забронировать в недоступную аудиторию");
 
@@ -267,8 +248,7 @@ class ReservationCalendarDataServiceTest {
         //Бронируем с 2021-12-17 19:00:00 по 2021-12-17 22:00:00 аудиторию 3, которая недоступна
 
         assertThrows(TimeSutisfyTemplateException.class, () -> {
-            ReservationCalendar reservationCalendar = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(10));
-            reservationCalendarDataService.deleteReservationCalendar(reservationCalendar.getId());
+            reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(10));
             System.out.println("Выброшено исключение:  " + TimeSutisfyTemplateException.class.getSimpleName());
         }, "Попытка забронировать в нерабочее время");
 
@@ -281,8 +261,7 @@ class ReservationCalendarDataServiceTest {
         //Бронируем с 2021-12-17 19:00:00 по 2021-12-17 18:00:00 аудиторию 2
 
         assertThrows(InvalidTimeException.class, () -> {
-            ReservationCalendar reservationCalendar = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(11));
-            reservationCalendarDataService.deleteReservationCalendar(reservationCalendar.getId());
+            reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(11));
             System.out.println("Выброшено исключение:  " + InvalidTimeException.class.getSimpleName());
         }, "Попытка забронировать в нерабочее время");
 
@@ -294,15 +273,12 @@ class ReservationCalendarDataServiceTest {
         //Тест на вывод всех броней в заданный интервал
         //Бронируем с 2021-12-20 12:00:00 по 2021-12-20 13:30:00 аудиторию 2
         ReservationCalendar bookingFirst = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(12));
-        int idFirst = bookingFirst.getId();
 
         //Бронируем с 2021-12-20 14:00:00 по 2021-12-20 15:00:00 аудиторию 2
         ReservationCalendar bookingSecond = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(13));
-        int idSecond = bookingSecond.getId();
 
         //Бронируем с 2021-12-20 16:00:00 по 2021-12-20 17:00:00 аудиторию 2
         ReservationCalendar bookingThird = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(14));
-        int idThird = bookingThird.getId();
 
         List<ReservationCalendar> expectedList = new ArrayList<>();
         expectedList.add(bookingFirst);
@@ -314,10 +290,6 @@ class ReservationCalendarDataServiceTest {
                 "2021-12-20T17:00:00", 2);
 
         assertEquals(list.toString(), expectedList.toString());
-
-        reservationCalendarDataService.deleteReservationCalendar(idFirst);
-        reservationCalendarDataService.deleteReservationCalendar(idSecond);
-        reservationCalendarDataService.deleteReservationCalendar(idThird);
         System.out.println("Тест testGetAllReservationCalendarByIntervalAndAudience пройден");
     }
 
@@ -326,15 +298,12 @@ class ReservationCalendarDataServiceTest {
         //Тест на вывод всех броней в заданный интервал
         //Бронируем с 2021-12-20 12:00:00 по 2021-12-20 13:30:00 аудиторию 2
         ReservationCalendar bookingFirst = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(12));
-        int idFirst = bookingFirst.getId();
 
         //Бронируем с 2021-12-20 14:00:00 по 2021-12-20 15:00:00 аудиторию 2
         ReservationCalendar bookingSecond = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(13));
-        int idSecond = bookingSecond.getId();
 
         //Бронируем с 2021-12-20 16:00:00 по 2021-12-20 17:00:00 аудиторию 2
         ReservationCalendar bookingThird = reservationCalendarDataService.saveReservationCalendar(bookingsForTests.get(14));
-        int idThird = bookingThird.getId();
 
         List<ReservationCalendar> expectedList = new ArrayList<>();
         expectedList.add(bookingSecond);
@@ -345,10 +314,6 @@ class ReservationCalendarDataServiceTest {
                 "2021-12-20T17:00:00", 2);
 
         assertEquals(list.toString(), expectedList.toString());
-
-        /*reservationCalendarDataService.deleteReservationCalendar(idFirst);
-        reservationCalendarDataService.deleteReservationCalendar(idSecond);
-        reservationCalendarDataService.deleteReservationCalendar(idThird);*/
         System.out.println("Тест testGetAllReservationCalendarByIntervalAndAudience пройден");
     }
 

@@ -5,7 +5,6 @@ import com.audience.booking.server.help_classes.ReservationCalendarRequestBody;
 import com.audience.booking.server.service.ReservationCalendarDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -57,14 +56,4 @@ public class ReservationCalendarRESTController {
         reservationService.deleteAllBookings();
         return "all bookings were deleted";
     }
-
-    static String convertToJSON(ReservationCalendarRequestBody reservationCalendarRequestBody) {
-        return "{" +
-                "\"start\" : " + "\"" + reservationCalendarRequestBody.getStart() + "\", " +
-                "\"end\" : " + "\"" + reservationCalendarRequestBody.getEnd() + "\", " +
-                "\"client\" : " + "\"" + reservationCalendarRequestBody.getClient() + "\", " +
-                "\"audience\" : " + "\"" + reservationCalendarRequestBody.getAudience() + "\"" +
-                "}";
-    }
-
 }

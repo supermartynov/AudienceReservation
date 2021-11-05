@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -54,7 +52,8 @@ public class ReservationCalendarDataService  {
         }
 
         if (ReservationCalendar.getMinutesFromTime(endTime) - ReservationCalendar.getMinutesFromTime(startTime) < 60
-                ||  (ReservationCalendar.getMinutesFromTime(endTime) - ReservationCalendar.getMinutesFromTime(startTime)) % 30 != 0)
+                || (ReservationCalendar.getMinutesFromTime(endTime) - ReservationCalendar.getMinutesFromTime(startTime)) % 30 != 0
+                || ReservationCalendar.getMinutesFromTime(endTime) % 30 != 0)
         {
             throw new MinBookingTimeException();
         }
@@ -90,7 +89,6 @@ public class ReservationCalendarDataService  {
             }
         }
 
-
         //попытка брони в разные дни
         if (startTime.getDayOfYear() != endTime.getDayOfYear()) {
             throw new DifferentDayException(startTime, endTime);
@@ -113,7 +111,6 @@ public class ReservationCalendarDataService  {
         }
 
         reservationCalendarCrudRepository.save(reservationCalendar);
-
         return reservationCalendar;
     }
 
@@ -121,12 +118,12 @@ public class ReservationCalendarDataService  {
     public ReservationCalendar getReservationCalendar(int id) {
 
         ReservationCalendar reservationCalendar = null;
-
         try {
             reservationCalendar = reservationCalendarCrudRepository.findById(id).get();
         } catch (NoSuchElementException err) {
             throw new MyEntityNotFoundException(id, ReservationCalendar.class.getSimpleName());
         }
+
         return reservationCalendar;
     }
 
