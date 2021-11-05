@@ -18,27 +18,27 @@ public class AudiencesRESTController {
     private AudienceDataService audienceService;
 
     @GetMapping("/")
-    public List<Audience> showAllEmployees() {
+    public List<Audience> showAllAudiences() {
          return audienceService.getAllAudiences();
     }
 
     @GetMapping("/{id}")
-    public Audience getEmployee(@PathVariable int id) {
+    public Audience getAudience(@PathVariable int id) {
         return audienceService.getAudience(id);
     }
 
     @PostMapping("/")
-    public Audience addEmployee(@RequestBody AudienceRequestBody audience) {
+    public Audience addAudience(@RequestBody AudienceRequestBody audience) {
         return  audienceService.saveAudience(audience);
     }
 
     @PutMapping("/")
-    public Audience updateEmployee(@RequestBody AudienceRequestBody audience) {
+    public Audience updateAudience(@RequestBody AudienceRequestBody audience) {
         return  audienceService.saveAudience(audience);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteEmployee(@PathVariable int id) {
+    public String deleteAudience(@PathVariable int id) {
         audienceService.deleteAudience(id);
         return "audience with id = " + id + "was deleted";
     }

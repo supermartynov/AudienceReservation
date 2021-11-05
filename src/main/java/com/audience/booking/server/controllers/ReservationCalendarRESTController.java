@@ -16,7 +16,7 @@ public class ReservationCalendarRESTController {
     @Autowired
     private ReservationCalendarDataService reservationService;
 
-    @GetMapping("/")
+    @GetMapping
     public List<ReservationCalendar> showAllEmployees() {
          return reservationService.getAllReservationCalendar();
     }
@@ -29,20 +29,19 @@ public class ReservationCalendarRESTController {
     @GetMapping("/calendar_list") //параметры: start_time, end_time, audience. Формат dateTime - 2011-10-20T10:23:54
     public List<ReservationCalendar> showCalendarList(HttpServletRequest request) {
 
-        //пример запроса - http://localhost:8080/reservation_calendar/calendar_list?start_time=2021-10-19T13:00:00&end_time=2021-10-20T14:00:00&audience_id=1
         String start_time = request.getParameter("start_time");
         String end_time = request.getParameter("end_time");
-        String audience = request.getParameter("audience_id");
+        int audience = Integer.parseInt(request.getParameter("audience_id"));
 
         return reservationService.getAllReservationCalendarByIntervalAndAudience(start_time, end_time, audience);
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ReservationCalendar addReservationCalendar(@RequestBody ReservationCalendarRequestBody reservationCalendarRequestBody) {
         return reservationService.saveReservationCalendar(reservationCalendarRequestBody);
     }
 
-    @PutMapping("/")
+    @PutMapping("")
     public ReservationCalendar updateReservationCalendar(@RequestBody ReservationCalendarRequestBody reservationCalendarRequestBody) {
         return addReservationCalendar(reservationCalendarRequestBody);
     }
@@ -51,6 +50,21 @@ public class ReservationCalendarRESTController {
     public String deleteReservationCalendar(@PathVariable int id) {
         reservationService.deleteReservationCalendar(id);
         return "reservation with id = " + id + "was deleted";
+    }
+
+    @DeleteMapping
+    public String deleteReservationCalendar() {
+        reservationService.deleteAllBookings();
+        return "all bookings were deleted";
+    }
+
+    static String convertToJSON(ReservationCalendarRequestBody reservationCalendarRequestBody) {
+        return "{" +
+                "\"start\" : " + "\"" + reservationCalendarRequestBody.getStart() + "\", " +
+                "\"end\" : " + "\"" + reservationCalendarRequestBody.getEnd() + "\", " +
+                "\"client\" : " + "\"" + reservationCalendarRequestBody.getClient() + "\", " +
+                "\"audience\" : " + "\"" + reservationCalendarRequestBody.getAudience() + "\"" +
+                "}";
     }
 
 }

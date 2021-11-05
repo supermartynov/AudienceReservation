@@ -48,6 +48,11 @@ public class ReservationCalendarDataService  {
         LocalDateTime startTime = reservationCalendarRequestBody.getStart();
         LocalDateTime endTime = reservationCalendarRequestBody.getEnd();
 
+        //начальное время позже конечного
+        if (startTime.isAfter(endTime)) {
+            throw new InvalidTimeException(startTime, endTime);
+        }
+
         if (ReservationCalendar.getMinutesFromTime(endTime) - ReservationCalendar.getMinutesFromTime(startTime) < 60
                 ||  (ReservationCalendar.getMinutesFromTime(endTime) - ReservationCalendar.getMinutesFromTime(startTime)) % 30 != 0)
         {
@@ -85,10 +90,6 @@ public class ReservationCalendarDataService  {
             }
         }
 
-        //начальное время позже конечного
-        if (startTime.isAfter(endTime)) {
-            throw new InvalidTimeException(startTime, endTime);
-        }
 
         //попытка брони в разные дни
         if (startTime.getDayOfYear() != endTime.getDayOfYear()) {
@@ -144,7 +145,7 @@ public class ReservationCalendarDataService  {
     }
 
     @Transactional
-    public List<ReservationCalendar> getAllReservationCalendarByIntervalAndAudience(String start, String end, String audienceId) {
+    public List<ReservationCalendar> getAllReservationCalendarByIntervalAndAudience(String start, String end, int audienceId) {
         LocalDateTime start_time = LocalDateTime.parse(start);
         LocalDateTime end_time = LocalDateTime.parse(end);
 
@@ -152,7 +153,7 @@ public class ReservationCalendarDataService  {
             throw new InvalidTimeException(start_time, end_time);
         }
 
-        Audience audience = audienceDataService.getAudience(Integer.parseInt(audienceId));
+        Audience audience = audienceDataService.getAudience(audienceId);
 
         return reservationCalendarCrudRepository.getAllReservationCalendarInterval(start_time, end_time, audience);
     }
@@ -160,6 +161,11 @@ public class ReservationCalendarDataService  {
     @Transactional
     public List<ReservationCalendar> getAllReservationCalendarByIntervalAndAudience(LocalDateTime start_time, LocalDateTime end_time, Audience audience) {
         return reservationCalendarCrudRepository.getAllReservationCalendarInterval(start_time, end_time, audience);
+    }
+
+    @Transactional
+    public void deleteAllBookings() {
+        reservationCalendarCrudRepository.deleteAll();
     }
 
 }
