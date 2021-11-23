@@ -28,49 +28,49 @@ class ReservationCalendarDataServiceTest {
 
     static {
         //0
-        LocalDateTime startTime = LocalDateTime.parse("2021-11-18T11:00:00");
-        LocalDateTime endTime = LocalDateTime.parse("2021-11-18T12:00:00");
+        LocalDateTime startTime = LocalDateTime.parse("2021-12-18T11:00:00");
+        LocalDateTime endTime = LocalDateTime.parse("2021-12-18T12:00:00");
         int clientId = 1;
         int audienceId = 2;
         bookingsForTests.add(new ReservationCalendarRequestBody(startTime, endTime, clientId, audienceId));
 
         // диапазон записи < 60 минут
         //1
-        startTime = LocalDateTime.parse("2021-11-18T12:00:00");
-        endTime = LocalDateTime.parse("2021-11-18T12:10:00");
+        startTime = LocalDateTime.parse("2021-12-18T12:00:00");
+        endTime = LocalDateTime.parse("2021-12-18T12:10:00");
         bookingsForTests.add(new ReservationCalendarRequestBody(startTime, endTime, 1, 2));
 
         // диапазон записи не кратен 30 минутам
         //2
-        startTime = LocalDateTime.parse("2021-11-18T12:00:00");
-        endTime = LocalDateTime.parse("2021-11-18T13:20:00");
+        startTime = LocalDateTime.parse("2021-12-18T12:00:00");
+        endTime = LocalDateTime.parse("2021-12-18T13:20:00");
         bookingsForTests.add(new ReservationCalendarRequestBody(startTime, endTime, 1, 2));
 
         //3
-        startTime = LocalDateTime.parse("2021-11-18T11:30:00");
-        endTime = LocalDateTime.parse("2021-11-18T12:30:00");
+        startTime = LocalDateTime.parse("2021-12-18T11:30:00");
+        endTime = LocalDateTime.parse("2021-12-18T12:30:00");
         bookingsForTests.add(new ReservationCalendarRequestBody(startTime, endTime, 1, 2));
 
         //4
-        startTime = LocalDateTime.parse("2021-11-18T12:00:00");
-        endTime = LocalDateTime.parse("2021-11-18T13:00:00");
+        startTime = LocalDateTime.parse("2021-12-18T12:00:00");
+        endTime = LocalDateTime.parse("2021-12-18T13:00:00");
         bookingsForTests.add(new ReservationCalendarRequestBody(startTime, endTime, 1, 2));
 
         //5
-        startTime = LocalDateTime.parse("2021-11-18T13:00:00");
-        endTime = LocalDateTime.parse("2021-11-18T14:00:00");
+        startTime = LocalDateTime.parse("2021-12-18T13:00:00");
+        endTime = LocalDateTime.parse("2021-12-18T14:00:00");
         bookingsForTests.add(new ReservationCalendarRequestBody(startTime, endTime, 1, 2));
 
         //Бронирование аудитории, которая не работает (Шаблон, закрепленный за аудиторией 3 имеет поле isAvailable=false
         //6
-        startTime = LocalDateTime.parse("2021-11-18T13:00:00");
-        endTime = LocalDateTime.parse("2021-11-18T14:00:00");
+        startTime = LocalDateTime.parse("2021-12-18T13:00:00");
+        endTime = LocalDateTime.parse("2021-12-18T14:00:00");
         bookingsForTests.add(new ReservationCalendarRequestBody(startTime, endTime, 1, 3));
 
         //Бронирование аудитории в разные дни
         //7
-        startTime = LocalDateTime.parse("2021-11-18T13:00:00");
-        endTime = LocalDateTime.parse("2021-11-19T14:00:00");
+        startTime = LocalDateTime.parse("2021-12-18T13:00:00");
+        endTime = LocalDateTime.parse("2021-12-19T14:00:00");
         bookingsForTests.add(new ReservationCalendarRequestBody(startTime, endTime, 1, 2));
 
         //Бронирование в прошлое (1 ноября)
