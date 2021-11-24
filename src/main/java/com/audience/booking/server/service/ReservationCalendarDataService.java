@@ -36,54 +36,24 @@ public class ReservationCalendarDataService  {
 
     @Transactional
     public ReservationCalendar saveReservationCalendar(ReservationCalendarRequestBody reservationCalendarRequestBody) {
-
-        Audience audience = null;
-        Client client = null;
+        //проверка полей запроса
+        checkValidRequestFields(reservationCalendarRequestBody);
+        Audience audience = getAudience(reservationCalendarRequestBody);
+        Client client = getClient(reservationCalendarRequestBody);
         LocalDateTime startTime = reservationCalendarRequestBody.getStart();
         LocalDateTime endTime = reservationCalendarRequestBody.getEnd();
-
-        checkValidRequestFields(reservationCalendarRequestBody);
-
-        try {
-            audience = audienceDataService.getAudience(reservationCalendarRequestBody.getAudience());
-        } catch (NoSuchElementException exception) {
-            throw new MyEntityNotFoundException(reservationCalendarRequestBody.getAudience(), Audience.class.getSimpleName());
-        }
-
-        try {
-            client = clientDataService.getClient(reservationCalendarRequestBody.getClient());
-        } catch (NoSuchElementException exception) {
-            throw new MyEntityNotFoundException(reservationCalendarRequestBody.getClient(), Client.class.getSimpleName());
-        }
 
         //находим все записи в заданный интервал и по заданной аудитории
         List<ReservationCalendar> reservationCalendarList = reservationService.getAllReservationCalendarByIntervalAndAudience(reservationCalendarRequestBody.getStart(),
                 reservationCalendarRequestBody.getEnd(), audience);
-
-        //следующие проверки предназначены для возможности непрерывного бронирования (Бронь1: 17:00-18:00; Бронь2: 18:00-19:00)
-        if ((reservationCalendarList.size() > 1)) {
-            if (!reservationCalendarList.get(reservationCalendarList.size() - 1).getStart().equals(endTime)) {
-                throw new AlreadyBookedException(reservationCalendarRequestBody);
-            }
-
-            if (!reservationCalendarList.get(0).getEnd().equals(startTime)) {
-                throw new AlreadyBookedException(reservationCalendarRequestBody);
-            }
-        } else if (reservationCalendarList.size() == 1) {
-            if (!(reservationCalendarList.get(0).getStart().isEqual(endTime) || reservationCalendarList.get(0).getEnd().isEqual(startTime))) {
-                throw new AlreadyBookedException(reservationCalendarRequestBody);
-            }
-        }
-
-        if (!audience.getTemplate().isAvailavle()) {
-            throw new AudienceAvailableException(audience.getId());
-        }
-
         ReservationCalendar reservationCalendar = new ReservationCalendar(startTime, endTime, client, audience);
 
+        //проверка времени бронирования на валидность
         timeValidation(startTime, endTime, reservationCalendar);
-
-        //проверка удовлетворяет ли временному шаблону запрос
+        //проверка доступности аудитория
+        checkAudienceAvailability(audience);
+        //проверка непрерывности бронирования
+        checkBookingContinuity(reservationCalendarList, startTime, endTime, reservationCalendarRequestBody);
 
         reservationCalendarCrudRepository.save(reservationCalendar);
         return reservationCalendar;
@@ -140,14 +110,55 @@ public class ReservationCalendarDataService  {
         reservationCalendarCrudRepository.deleteAll();
     }
 
-    public void checkValidRequestFields(ReservationCalendarRequestBody reservationCalendarRequestBody) {
+    private void checkValidRequestFields(ReservationCalendarRequestBody reservationCalendarRequestBody) {
         if (reservationCalendarRequestBody.getStart() == null || reservationCalendarRequestBody.getEnd() == null
                 || reservationCalendarRequestBody.getClient() <= 0 || reservationCalendarRequestBody.getAudience() <= 0) {
             throw new InvalidRequestFieldsException();
         }
     }
 
-    public void timeValidation(LocalDateTime startTime, LocalDateTime endTime, ReservationCalendar reservationCalendar ) {
+    private Client getClient(ReservationCalendarRequestBody reservationCalendarRequestBody) {
+        try {
+            return clientDataService.getClient(reservationCalendarRequestBody.getClient());
+        } catch (NoSuchElementException exception) {
+            throw new MyEntityNotFoundException(reservationCalendarRequestBody.getClient(), Client.class.getSimpleName());
+        }
+    }
+
+    private Audience getAudience(ReservationCalendarRequestBody reservationCalendarRequestBody) {
+        try {
+            return audienceDataService.getAudience(reservationCalendarRequestBody.getAudience());
+        } catch (NoSuchElementException exception) {
+            throw new MyEntityNotFoundException(reservationCalendarRequestBody.getAudience(), Audience.class.getSimpleName());
+        }
+    }
+
+    private void checkAudienceAvailability(Audience audience) {
+        if (!audience.getTemplate().isAvailavle()) {
+            throw new AudienceAvailableException(audience.getId());
+        }
+    }
+
+    private void checkBookingContinuity(List<ReservationCalendar> reservationCalendarList, LocalDateTime startTime,
+                                        LocalDateTime endTime, ReservationCalendarRequestBody reservationCalendarRequestBody)
+    {
+        //следующие проверки предназначены для возможности непрерывного бронирования (Бронь1: 17:00-18:00; Бронь2: 18:00-19:00)
+        if ((reservationCalendarList.size() > 1)) {
+            if (!reservationCalendarList.get(reservationCalendarList.size() - 1).getStart().equals(endTime)) {
+                throw new AlreadyBookedException(reservationCalendarRequestBody);
+            }
+            if (!reservationCalendarList.get(0).getEnd().equals(startTime)) {
+                throw new AlreadyBookedException(reservationCalendarRequestBody);
+            }
+        } else if (reservationCalendarList.size() == 1) {
+            if (!(reservationCalendarList.get(0).getStart().isEqual(endTime) || reservationCalendarList.get(0).getEnd().isEqual(startTime))) {
+                throw new AlreadyBookedException(reservationCalendarRequestBody);
+            }
+        }
+
+    }
+
+    private void timeValidation(LocalDateTime startTime, LocalDateTime endTime, ReservationCalendar reservationCalendar ) {
         //начальное время позже конечного
         if (startTime.isAfter(endTime)) {
             throw new InvalidTimeException(startTime, endTime);
@@ -171,6 +182,7 @@ public class ReservationCalendarDataService  {
             throw new SoonerOrLaterException(startTime);
         }
 
+        //время не соответствует шаблону
         if (!templateTimeValidation(reservationCalendar)) {
             throw new TimeSutisfyTemplateException(startTime, endTime, reservationCalendar.getAudience().getTemplate());
         }
