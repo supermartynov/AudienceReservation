@@ -16,7 +16,7 @@ public class ReservationCalendarRESTController {
     private ReservationCalendarDataService reservationService;
 
     @GetMapping
-    public List<ReservationCalendar> showAllEmployees() {
+    public List<ReservationCalendar> showAllReservations() {
          return reservationService.getAllReservationCalendar();
     }
 

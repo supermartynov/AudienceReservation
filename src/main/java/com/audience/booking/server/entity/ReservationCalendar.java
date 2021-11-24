@@ -37,27 +37,6 @@ public class ReservationCalendar {
         this.audience = audience;
     }
 
-    public static boolean isValidTime(ReservationCalendar reservationCalendar) {
-        LocalTime reservationStartTime = reservationCalendar.getStart().toLocalTime();
-        LocalTime reservationEndTime = reservationCalendar.getEnd().toLocalTime();
-        LocalTime validStartTime = reservationCalendar.audience.getTemplate().getStartTime();
-        LocalTime validEndTime = reservationCalendar.audience.getTemplate().getEndTime();
-
-        if (reservationStartTime.isBefore(validStartTime) || reservationStartTime.isAfter(validEndTime)) {
-            return false;
-        }
-
-        if (reservationEndTime.isBefore(validStartTime) || reservationEndTime.isAfter(validEndTime)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public static int getMinutesFromTime(LocalDateTime localDateTime) {
-        return localDateTime.getHour() * 60 + localDateTime.getMinute() + localDateTime.getSecond() / 60;
-    }
-
     public LocalDateTime getStart() {
         return start;
     }

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -36,27 +37,12 @@ public class ReservationCalendarDataService  {
     @Transactional
     public ReservationCalendar saveReservationCalendar(ReservationCalendarRequestBody reservationCalendarRequestBody) {
 
-        if (reservationCalendarRequestBody.getStart() == null || reservationCalendarRequestBody.getEnd() == null
-                || reservationCalendarRequestBody.getClient() <= 0 || reservationCalendarRequestBody.getAudience() <= 0) {
-            throw new InvalidRequestFieldsException();
-        }
-
         Audience audience = null;
         Client client = null;
         LocalDateTime startTime = reservationCalendarRequestBody.getStart();
         LocalDateTime endTime = reservationCalendarRequestBody.getEnd();
 
-        //начальное время позже конечного
-        if (startTime.isAfter(endTime)) {
-            throw new InvalidTimeException(startTime, endTime);
-        }
-
-        if (ReservationCalendar.getMinutesFromTime(endTime) - ReservationCalendar.getMinutesFromTime(startTime) < 60
-                || (ReservationCalendar.getMinutesFromTime(endTime) - ReservationCalendar.getMinutesFromTime(startTime)) % 30 != 0
-                || ReservationCalendar.getMinutesFromTime(endTime) % 30 != 0)
-        {
-            throw new MinBookingTimeException();
-        }
+        checkValidRequestFields(reservationCalendarRequestBody);
 
         try {
             audience = audienceDataService.getAudience(reservationCalendarRequestBody.getAudience());
@@ -89,26 +75,15 @@ public class ReservationCalendarDataService  {
             }
         }
 
-        //попытка брони в разные дни
-        if (startTime.getDayOfYear() != endTime.getDayOfYear()) {
-            throw new DifferentDayException(startTime, endTime);
-        }
-
-        //попытка бронирования в прошлое или за 90 дней от сегодня
-        if (startTime.isBefore(LocalDateTime.now()) || startTime.isAfter(LocalDateTime.now().plusDays(90))) {
-            throw new SoonerOrLaterException(startTime);
-        }
-
         if (!audience.getTemplate().isAvailavle()) {
             throw new AudienceAvailableException(audience.getId());
         }
 
         ReservationCalendar reservationCalendar = new ReservationCalendar(startTime, endTime, client, audience);
 
+        timeValidation(startTime, endTime, reservationCalendar);
+
         //проверка удовлетворяет ли временному шаблону запрос
-        if (!ReservationCalendar.isValidTime(reservationCalendar)) {
-            throw new TimeSutisfyTemplateException(startTime, endTime, reservationCalendar.getAudience().getTemplate());
-        }
 
         reservationCalendarCrudRepository.save(reservationCalendar);
         return reservationCalendar;
@@ -163,6 +138,63 @@ public class ReservationCalendarDataService  {
     @Transactional
     public void deleteAllBookings() {
         reservationCalendarCrudRepository.deleteAll();
+    }
+
+    public void checkValidRequestFields(ReservationCalendarRequestBody reservationCalendarRequestBody) {
+        if (reservationCalendarRequestBody.getStart() == null || reservationCalendarRequestBody.getEnd() == null
+                || reservationCalendarRequestBody.getClient() <= 0 || reservationCalendarRequestBody.getAudience() <= 0) {
+            throw new InvalidRequestFieldsException();
+        }
+    }
+
+    public void timeValidation(LocalDateTime startTime, LocalDateTime endTime, ReservationCalendar reservationCalendar ) {
+        //начальное время позже конечного
+        if (startTime.isAfter(endTime)) {
+            throw new InvalidTimeException(startTime, endTime);
+        }
+
+        //проверка того, что время бронирования больше 60 минутам и запись возможно только во время кратное 30 минутам
+        if (getMinutesFromTime(endTime) - getMinutesFromTime(startTime) < 60
+                || (getMinutesFromTime(endTime) - getMinutesFromTime(startTime)) % 30 != 0
+                || getMinutesFromTime(endTime) % 30 != 0)
+        {
+            throw new MinBookingTimeException();
+        }
+
+        //попытка брони в разные дни
+        if (startTime.getDayOfYear() != endTime.getDayOfYear()) {
+            throw new DifferentDayException(startTime, endTime);
+        }
+
+        //попытка бронирования в прошлое или за 90 дней от сегодня
+        if (startTime.isBefore(LocalDateTime.now()) || startTime.isAfter(LocalDateTime.now().plusDays(90))) {
+            throw new SoonerOrLaterException(startTime);
+        }
+
+        if (!templateTimeValidation(reservationCalendar)) {
+            throw new TimeSutisfyTemplateException(startTime, endTime, reservationCalendar.getAudience().getTemplate());
+        }
+    }
+
+    private boolean templateTimeValidation(ReservationCalendar reservationCalendar) {
+        LocalTime reservationStartTime = reservationCalendar.getStart().toLocalTime();
+        LocalTime reservationEndTime = reservationCalendar.getEnd().toLocalTime();
+        LocalTime validStartTime = reservationCalendar.getAudience().getTemplate().getStartTime();
+        LocalTime validEndTime = reservationCalendar.getAudience().getTemplate().getEndTime();
+
+        if (reservationStartTime.isBefore(validStartTime) || reservationStartTime.isAfter(validEndTime)) {
+            return false;
+        }
+
+        if (reservationEndTime.isBefore(validStartTime) || reservationEndTime.isAfter(validEndTime)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private int getMinutesFromTime(LocalDateTime localDateTime) {
+        return localDateTime.getHour() * 60 + localDateTime.getMinute() + localDateTime.getSecond() / 60;
     }
 
 }
