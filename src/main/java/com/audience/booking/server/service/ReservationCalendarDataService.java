@@ -38,6 +38,7 @@ public class ReservationCalendarDataService  {
     public ReservationCalendar saveReservationCalendar(ReservationCalendarRequestBody reservationCalendarRequestBody) {
         //проверка полей запроса
         checkValidRequestFields(reservationCalendarRequestBody);
+
         Audience audience = getAudience(reservationCalendarRequestBody);
         Client client = getClient(reservationCalendarRequestBody);
         LocalDateTime startTime = reservationCalendarRequestBody.getStart();
@@ -50,10 +51,10 @@ public class ReservationCalendarDataService  {
 
         //проверка времени бронирования на валидность
         timeValidation(startTime, endTime, reservationCalendar);
-        //проверка доступности аудитория
+        //проверка доступности аудитории
         checkAudienceAvailability(audience);
-        //проверка непрерывности бронирования
-        checkBookingContinuity(reservationCalendarList, startTime, endTime, reservationCalendarRequestBody);
+        //проверка на занятость аудитории в данное время
+        checkBookingAvailability(reservationCalendarList, startTime, endTime, reservationCalendarRequestBody);
 
         reservationCalendarCrudRepository.save(reservationCalendar);
         return reservationCalendar;
@@ -139,10 +140,9 @@ public class ReservationCalendarDataService  {
         }
     }
 
-    private void checkBookingContinuity(List<ReservationCalendar> reservationCalendarList, LocalDateTime startTime,
-                                        LocalDateTime endTime, ReservationCalendarRequestBody reservationCalendarRequestBody)
+    private void checkBookingAvailability(List<ReservationCalendar> reservationCalendarList, LocalDateTime startTime,
+                                          LocalDateTime endTime, ReservationCalendarRequestBody reservationCalendarRequestBody)
     {
-        //следующие проверки предназначены для возможности непрерывного бронирования (Бронь1: 17:00-18:00; Бронь2: 18:00-19:00)
         if ((reservationCalendarList.size() > 1)) {
             if (!reservationCalendarList.get(reservationCalendarList.size() - 1).getStart().equals(endTime)) {
                 throw new AlreadyBookedException(reservationCalendarRequestBody);
@@ -182,7 +182,7 @@ public class ReservationCalendarDataService  {
             throw new SoonerOrLaterException(startTime);
         }
 
-        //время не соответствует шаблону
+        //время не соответствует времени работы аудитории, прописанное в шаблоне
         if (!templateTimeValidation(reservationCalendar)) {
             throw new TimeSutisfyTemplateException(startTime, endTime, reservationCalendar.getAudience().getTemplate());
         }
